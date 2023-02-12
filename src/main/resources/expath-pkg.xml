@@ -1,0 +1,12 @@
+<package xmlns="http://expath.org/mod/expath-pkg" spec="1.0" version="${project.version}" abbrev="${project.artifactId}"
+         name="tag:dmaus@dmaus.name,2023:Schematron:SchXslt">
+
+  <title>SchXslt2 Schematron to XSLT 3.0 transpiler</title>
+  <home>${project.url}</home>
+
+  <xslt>
+    <import-uri>https://pkg.dmaus.name/expath-pkg/${project.artifactId}/transpile.xsl</import-uri>
+    <file>transpile.xsl</file>
+  </xslt>
+
+</package>

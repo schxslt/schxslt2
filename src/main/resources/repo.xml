@@ -1,0 +1,10 @@
+<meta xmlns="http://exist-db.org/xquery/repo">
+  <description>${project.name}</description>
+  <author>David Maus</author>
+  <website>https://git.sr.ht/~dmaus/SchXslt2-Core</website>
+  <status>stable</status>
+  <license>The MIT License</license>
+  <copyright>true</copyright>
+  <type>library</type>
+  <target>${project.artifactId}</target>
+</meta>

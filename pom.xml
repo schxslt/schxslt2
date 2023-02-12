@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>name.dmaus.schxslt</groupId>
+  <artifactId>schxslt2-core</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+
+  <name>SchXslt2 Schematron to XSLT 3.0 transpiler</name>
+  <url>https://git.sr.ht/~dmaus/SchXslt2-Core</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>prepare-zip</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/xslt-only</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/resources/content</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <appendAssemblyId>false</appendAssemblyId>
+        </configuration>
+        <executions>
+          <!-- Build a ZIP file with only the XSLT stylesheets -->
+          <execution>
+            <id>zip</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>src/assembly/xslt-only.xml</descriptor>
+              </descriptors>
+              <finalName>${project.artifactId}-${project.version}</finalName>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
