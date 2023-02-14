@@ -273,6 +273,13 @@ SOFTWARE.
         </alias:if>
 
         <svrl:schematron-output>
+          <xsl:sequence select="@schemaVersion"/>
+          <alias:if test="$schxslt.phase ne '#ALL'">
+            <alias:attribute name="phase" select="$schxslt.phase"/>
+          </alias:if>
+          <xsl:for-each select="sch:ns">
+            <svrl:ns-prefix-in-attribute-values prefix="{@prefix}" uri="{@uri}"/>
+          </xsl:for-each>
           <xsl:for-each select="map:keys($patterns)">
             <xsl:variable name="groupId" as="xs:string" select="."/>
             <xsl:for-each select="map:get($patterns, $groupId)">
@@ -450,11 +457,12 @@ SOFTWARE.
     <xsl:variable name="diagnostics" as="xs:string*" select="tokenize(normalize-space(@diagnostics))"/>
     <xsl:for-each select="if (../../sch:diagnostics) then key('diagnosticById', $diagnostics, ../..) else key('diagnosticById', $diagnostics, ancestor::sch:schema)">
       <svrl:diagnostic-reference diagnostic="{@id}">
-        <xsl:sequence select="@xml:*"/>
-        <xsl:sequence select="@see"/>
-        <xsl:sequence select="@icon"/>
-        <xsl:sequence select="@fpi"/>
         <svrl:text>
+          <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
+          <xsl:sequence select="@xml:space"/>
+          <xsl:sequence select="@see"/>
+          <xsl:sequence select="@icon"/>
+          <xsl:sequence select="@fpi"/>
           <xsl:apply-templates select="node()" mode="copy-message-content"/>
         </svrl:text>
       </svrl:diagnostic-reference>
