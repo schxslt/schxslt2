@@ -476,7 +476,8 @@ SOFTWARE.
         <xsl:sequence select="@role"/>
         <xsl:sequence select="@scheme"/>
         <svrl:text>
-          <xsl:sequence select="@xml:*"/>
+          <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
+          <xsl:sequence select="@xml:space"/>
           <xsl:sequence select="@see"/>
           <xsl:sequence select="@icon"/>
           <xsl:sequence select="@fpi"/>
