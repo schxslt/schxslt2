@@ -158,7 +158,9 @@ SOFTWARE.
       </xsl:message>
     </xsl:if>
 
-    <xsl:variable name="instance" as="node()*">
+    <xsl:variable name="instance" as="document-node()">
+      <!-- In order to make use of fn:key() in the transpilation stage
+           we need to root the preprocessed schema. -->
       <xsl:document>
         <xsl:apply-templates select="$is-a/node()" mode="#current">
           <xsl:with-param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
