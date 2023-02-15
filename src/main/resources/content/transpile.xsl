@@ -45,6 +45,14 @@ SOFTWARE.
     -->
   </xsl:param>
 
+  <xsl:param name="streamable" as="xs:boolean" select="false()" static="yes">
+    <!--
+        Set to boolean true() to create a streamable validation stylesheet. This *does not* check the streamability of
+        the XPath expressions in rules, assertions, variables etc. It merely declares the modes to be streamable and
+        removes the @location attribute from the SVRL output becase fn:path() is not streamable.
+    -->
+  </xsl:param>
+
   <xsl:mode name="expand" on-no-match="shallow-copy"/>
   <xsl:mode name="include" on-no-match="shallow-copy"/>
   <xsl:mode name="transpile" on-no-match="shallow-skip"/>
@@ -259,7 +267,7 @@ SOFTWARE.
       <xsl:sequence select="xsl:key | xsl:function"/>
 
       <xsl:for-each select="map:keys($patterns)">
-        <alias:mode name="{.}" on-no-match="shallow-skip"/>
+        <alias:mode name="{.}" on-no-match="shallow-skip" streamable="{$streamable}"/>
         <xsl:apply-templates select="map:get($patterns, .)/sch:let" mode="#current"/>
         <xsl:apply-templates select="map:get($patterns, .)/sch:rule" mode="#current">
           <xsl:with-param name="mode" as="xs:string" select="."/>
@@ -399,7 +407,7 @@ SOFTWARE.
         <xsl:sequence select="@role"/>
         <xsl:sequence select="@test"/>
         <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
-        <alias:attribute name="location" select="path(.)"/>
+        <alias:attribute name="location" select="path(.)" xsl:use-when="not($streamable)"/>
         <xsl:call-template name="report-diagnostics"/>
         <xsl:call-template name="report-properties"/>
         <xsl:call-template name="report-message"/>
@@ -415,7 +423,7 @@ SOFTWARE.
         <xsl:sequence select="@role"/>
         <xsl:sequence select="@test"/>
         <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
-        <alias:attribute name="location" select="path(.)"/>
+        <alias:attribute name="location" select="path(.)" xsl:use-when="not($streamable)"/>
         <xsl:call-template name="report-diagnostics"/>
         <xsl:call-template name="report-properties"/>
         <xsl:call-template name="report-message"/>
