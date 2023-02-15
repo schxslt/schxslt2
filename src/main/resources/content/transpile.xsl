@@ -49,7 +49,15 @@ SOFTWARE.
     <!--
         Set to boolean true() to create a streamable validation stylesheet. This *does not* check the streamability of
         the XPath expressions in rules, assertions, variables etc. It merely declares the modes to be streamable and
-        removes the @location attribute from the SVRL output becase fn:path() is not streamable.
+        removes the @location attribute from the SVRL output when no location function is given becase the default
+        fn:path() is not streamable.
+    -->
+  </xsl:param>
+
+  <xsl:param name="location" as="xs:string?" select="()" static="yes">
+    <!--
+        Name of a function f($context as node()) as xs:string that provides location information for the SVRL
+        report. Defaults to fn:path().
     -->
   </xsl:param>
 
@@ -407,7 +415,7 @@ SOFTWARE.
         <xsl:sequence select="@role"/>
         <xsl:sequence select="@test"/>
         <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
-        <alias:attribute name="location" select="path(.)" xsl:use-when="not($streamable)"/>
+        <alias:attribute name="location" select="{($location, 'path')[1]}(.)" xsl:use-when="not($streamable) or exists($location)"/>
         <xsl:call-template name="report-diagnostics"/>
         <xsl:call-template name="report-properties"/>
         <xsl:call-template name="report-message"/>
