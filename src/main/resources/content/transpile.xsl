@@ -39,25 +39,25 @@ SOFTWARE.
   <xsl:param name="phase" as="xs:string" select="'#DEFAULT'">
     <!--
         Name of a single phase or a list of comma or whitespace separated phases. SchXslt transpiles only patterns that
-        belong to one of the selected phases. The default value '#DEFAULT' selects the pattern in the
-        sch:schema/@defaultPhase attribute or '#ALL' if this attribute is not present. The value '#ALL' selects all
-        patterns.
+        belong to one of the selected phases. The value '#DEFAULT' selects the pattern in the sch:schema/@defaultPhase
+        attribute or '#ALL' if this attribute is not present. The value '#ALL' selects all patterns. Defaults to
+        '#DEFAULT'.
     -->
   </xsl:param>
 
   <xsl:param name="streamable" as="xs:boolean" select="false()" static="yes">
     <!--
         Set to boolean true() to create a streamable validation stylesheet. This *does not* check the streamability of
-        the XPath expressions in rules, assertions, variables etc. It merely declares the modes to be streamable and
-        removes the @location attribute from the SVRL output when no location function is given becase the default
-        fn:path() is not streamable.
+        XPath expressions in rules, assertions, variables etc. It merely declares the modes in the validation stylesheet
+        to be streamable and removes the @location attribute from the SVRL output when no location function is given
+        becase the default fn:path() is not streamable. Defaults to false().
     -->
   </xsl:param>
 
-  <xsl:param name="location" as="xs:string?" select="()" static="yes">
+  <xsl:param name="location-function" as="xs:string?" select="()" static="yes">
     <!--
         Name of a function f($context as node()) as xs:string that provides location information for the SVRL
-        report. Defaults to fn:path().
+        report. Defaults to fn:path() when not set.
     -->
   </xsl:param>
 
@@ -114,12 +114,9 @@ SOFTWARE.
     <xsl:variable name="external" as="element()" select="if (document(@href) instance of document-node()) then document(@href)/*[1] else document(@href)"/>
     <xsl:if test="(namespace-uri($external) ne 'http://purl.oclc.org/dsdl/schematron') or (local-name($external) ne 'rule')">
       <xsl:variable name="message" as="xs:string+">
-        The @href attribute of an &lt;extends&gt; element must be an
-        IRI reference to an external well-formed XML document or to an
-        element in an external well-formed XML document that is a
-        Schematron &lt;rule&gt; element. This @href points to a
-        Q{{{namespace-uri($external)}}}{local-name($external)}
-        element.
+        The @href attribute of an &lt;extends&gt; element must be an IRI reference to an external well-formed XML
+        document or to an element in an external well-formed XML document that is a Schematron &lt;rule&gt;
+        element. This @href points to a Q{{{namespace-uri($external)}}}{local-name($external)} element.
       </xsl:variable>
       <xsl:message terminate="yes">
         <xsl:text/>
@@ -415,7 +412,7 @@ SOFTWARE.
         <xsl:sequence select="@role"/>
         <xsl:sequence select="@test"/>
         <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
-        <alias:attribute name="location" select="{($location, 'path')[1]}(.)" xsl:use-when="not($streamable) or exists($location)"/>
+        <alias:attribute name="location" select="{($location-function, 'path')[1]}(.)" xsl:use-when="not($streamable) or exists($location-function)"/>
         <xsl:call-template name="report-diagnostics"/>
         <xsl:call-template name="report-properties"/>
         <xsl:call-template name="report-message"/>
