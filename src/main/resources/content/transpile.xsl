@@ -38,10 +38,8 @@ SOFTWARE.
 
   <xsl:param name="phase" as="xs:string" select="'#DEFAULT'">
     <!--
-        Name of a single phase or a list of comma or whitespace separated phases. SchXslt transpiles only patterns that
-        belong to one of the selected phases. The value '#DEFAULT' selects the pattern in the sch:schema/@defaultPhase
-        attribute or '#ALL' if this attribute is not present. The value '#ALL' selects all patterns. Defaults to
-        '#DEFAULT'.
+        Name of the validation phase. The value '#DEFAULT' selects the pattern in the sch:schema/@defaultPhase attribute
+        or '#ALL' if this attribute is not present. The value '#ALL' selects all patterns. Defaults to '#DEFAULT'.
     -->
   </xsl:param>
 
@@ -330,9 +328,6 @@ SOFTWARE.
     <xsl:param name="mode" as="xs:string" required="yes"/>
 
     <alias:template match="{@context}" mode="{$mode}" priority="{last() - position()}">
-      <xsl:call-template name="create-pattern-use-when">
-        <xsl:with-param name="pattern" as="element(sch:pattern)" select=".."/>
-      </xsl:call-template>
       <alias:param name="schxslt:pattern" as="xs:string*" select="()"/>
       <alias:choose>
         <alias:when test="'{generate-id(..)}' = $schxslt:pattern">
@@ -385,14 +380,6 @@ SOFTWARE.
 
   <xsl:template match="sch:let" as="element(xsl:variable)" mode="transpile">
     <alias:variable name="{@name}">
-      <xsl:if test="parent::sch:phase">
-        <xsl:attribute name="use-when">$schxslt.phase = '{../@id}'</xsl:attribute>
-      </xsl:if>
-      <xsl:if test="parent::sch:pattern">
-        <xsl:call-template name="create-pattern-use-when">
-          <xsl:with-param name="pattern" as="element(sch:pattern)" select=".."/>
-        </xsl:call-template>
-      </xsl:if>
       <xsl:choose>
         <xsl:when test="@value">
           <xsl:attribute name="select" select="@value"/>
@@ -500,22 +487,6 @@ SOFTWARE.
         </svrl:text>
       </svrl:property-reference>
     </xsl:for-each>
-  </xsl:template>
-
-  <xsl:template name="create-pattern-use-when" as="attribute(use-when)">
-    <xsl:param name="pattern" as="element(sch:pattern)" required="yes"/>
-
-    <xsl:variable name="phases" as="xs:string+" select="('#ALL', key('phaseByPatternId', $pattern/@id)/@id) ! schxslt:quote(.)"/>
-
-    <xsl:variable name="use-when" as="xs:string+">
-      $schxslt.phase = ({string-join($phases, ',')})
-      <xsl:if test="$pattern/@id">
-        or '{$pattern/@id}' = $schxslt.pattern
-      </xsl:if>
-    </xsl:variable>
-
-    <xsl:attribute name="use-when" select="normalize-space(string-join($use-when))"/>
-
   </xsl:template>
 
   <xsl:function name="schxslt:phases" as="xs:string+">
