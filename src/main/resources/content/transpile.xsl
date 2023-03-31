@@ -388,9 +388,9 @@ SOFTWARE.
         <xsl:sequence select="@test"/>
         <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
         <alias:attribute name="location" select="{($schxslt:location-function, 'path')[1]}(.)" xsl:use-when="not($schxslt:streamable) or exists($schxslt:location-function)"/>
-        <xsl:call-template name="report-diagnostics"/>
-        <xsl:call-template name="report-properties"/>
-        <xsl:call-template name="report-message"/>
+        <xsl:call-template name="schxslt:report-diagnostics"/>
+        <xsl:call-template name="schxslt:report-properties"/>
+        <xsl:call-template name="schxslt:report-message"/>
       </svrl:failed-assert>
     </alias:if>
   </xsl:template>
@@ -404,9 +404,9 @@ SOFTWARE.
         <xsl:sequence select="@test"/>
         <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
         <alias:attribute name="location" select="path(.)" xsl:use-when="not($schxslt:streamable)"/>
-        <xsl:call-template name="report-diagnostics"/>
-        <xsl:call-template name="report-properties"/>
-        <xsl:call-template name="report-message"/>
+        <xsl:call-template name="schxslt:report-diagnostics"/>
+        <xsl:call-template name="schxslt:report-properties"/>
+        <xsl:call-template name="schxslt:report-message"/>
       </svrl:successful-report>
     </alias:if>
   </xsl:template>
@@ -434,7 +434,7 @@ SOFTWARE.
     <alias:value-of select="{@select}"/>
   </xsl:template>
 
-  <xsl:template name="report-message" as="element(svrl:text)?">
+  <xsl:template name="schxslt:report-message" as="element(svrl:text)?">
     <xsl:if test="text() | *">
       <svrl:text>
         <xsl:sequence select="@xml:*"/>
@@ -443,7 +443,7 @@ SOFTWARE.
     </xsl:if>
   </xsl:template>
 
-  <xsl:template name="report-diagnostics" as="element(svrl:diagnostic-reference)*">
+  <xsl:template name="schxslt:report-diagnostics" as="element(svrl:diagnostic-reference)*">
     <xsl:variable name="diagnostics" as="xs:string*" select="tokenize(normalize-space(@diagnostics))"/>
     <xsl:for-each select="if (../../sch:diagnostics) then key('schxslt:diagnosticById', $diagnostics, ../..) else key('schxslt:diagnosticById', $diagnostics, ancestor::sch:schema)">
       <svrl:diagnostic-reference diagnostic="{@id}">
@@ -459,7 +459,7 @@ SOFTWARE.
     </xsl:for-each>
   </xsl:template>
 
-  <xsl:template name="report-properties" as="element(svrl:property-reference)*">
+  <xsl:template name="schxslt:report-properties" as="element(svrl:property-reference)*">
     <xsl:variable name="properties" as="xs:string*" select="tokenize(normalize-space(@properties))"/>
     <xsl:for-each select="if (../../sch:properties) then key('schxslt:propertyById', $properties, ../..) else key('schxslt:propertyById', $properties, ancestor::sch:schema)">
       <svrl:property-reference property="{@id}">
