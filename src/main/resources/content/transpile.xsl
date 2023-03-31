@@ -75,13 +75,16 @@ SOFTWARE.
 
   <xsl:template name="schxslt:transpile" match="sch:schema" as="element(xsl:stylesheet)">
     <xsl:context-item as="element(sch:schema)"/>
+    <xsl:param name="schema" as="element(sch:schema)" select="."/>
+    <xsl:param name="phase" as="xs:string" select="$schxslt:phase"/>
+
     <xsl:variable name="schema" as="document-node(element(sch:schema))">
       <xsl:document>
         <xsl:call-template name="schxslt:perform-expand">
           <xsl:with-param name="schema" as="document-node(element(sch:schema))">
             <xsl:document>
               <xsl:call-template name="schxslt:perform-include">
-                <xsl:with-param name="schema" as="element(sch:schema)" select="."/>
+                <xsl:with-param name="schema" as="element(sch:schema)" select="$schema"/>
               </xsl:call-template>
             </xsl:document>
           </xsl:with-param>
@@ -89,7 +92,9 @@ SOFTWARE.
       </xsl:document>
     </xsl:variable>
 
-    <xsl:apply-templates select="$schema" mode="schxslt:transpile"/>
+    <xsl:apply-templates select="$schema" mode="schxslt:transpile">
+      <xsl:with-param name="phase" as="xs:string" select="$phase"/>
+    </xsl:apply-templates>
 
   </xsl:template>
 
@@ -248,8 +253,9 @@ SOFTWARE.
 
   <!-- Step 3: Transpile -->
   <xsl:template match="sch:schema" as="element(xsl:stylesheet)" mode="schxslt:transpile">
+    <xsl:param name="phase" as="xs:string" required="yes"/>
 
-    <xsl:variable name="phases" as="xs:string+" select="schxslt:phases($schxslt:phase, @defaultPhase)"/>
+    <xsl:variable name="phases" as="xs:string+" select="schxslt:phases($phase, @defaultPhase)"/>
     <xsl:variable name="patterns" as="map(xs:string, element(sch:pattern)+)">
       <xsl:map>
         <xsl:for-each-group select="key('schxslt:patternByPhaseId', $phases)" group-by="string(@documents)">
