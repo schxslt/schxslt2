@@ -36,14 +36,14 @@ SOFTWARE.
 
   <xsl:output indent="yes" use-when="$debug"/>
 
-  <xsl:param name="phase" as="xs:string" select="'#DEFAULT'">
+  <xsl:param name="schxslt:phase" as="xs:string" select="'#DEFAULT'">
     <!--
         Name of the validation phase. The value '#DEFAULT' selects the pattern in the sch:schema/@defaultPhase attribute
         or '#ALL' if this attribute is not present. The value '#ALL' selects all patterns. Defaults to '#DEFAULT'.
     -->
   </xsl:param>
 
-  <xsl:param name="streamable" as="xs:boolean" select="false()" static="yes">
+  <xsl:param name="schxslt:streamable" as="xs:boolean" select="false()" static="yes">
     <!--
         Set to boolean true() to create a streamable validation stylesheet. This *does not* check the streamability of
         XPath expressions in rules, assertions, variables etc. It merely declares the modes in the validation stylesheet
@@ -52,7 +52,7 @@ SOFTWARE.
     -->
   </xsl:param>
 
-  <xsl:param name="location-function" as="xs:string?" select="()" static="yes">
+  <xsl:param name="schxslt:location-function" as="xs:string?" select="()" static="yes">
     <!--
         Name of a function f($context as node()) as xs:string that provides location information for the SVRL
         report. Defaults to fn:path() when not set.
@@ -247,7 +247,7 @@ SOFTWARE.
   <!-- Step 3: Transpile -->
   <xsl:template match="sch:schema" as="element(xsl:stylesheet)" mode="transpile">
 
-    <xsl:variable name="phases" as="xs:string+" select="schxslt:phases($phase, @defaultPhase)"/>
+    <xsl:variable name="phases" as="xs:string+" select="schxslt:phases($schxslt:phase, @defaultPhase)"/>
     <xsl:variable name="patterns" as="map(xs:string, element(sch:pattern)+)">
       <xsl:map>
         <xsl:for-each-group select="key('patternByPhaseId', $phases)" group-by="string(@documents)">
@@ -270,7 +270,7 @@ SOFTWARE.
       <xsl:sequence select="xsl:key | xsl:function"/>
 
       <xsl:for-each select="map:keys($patterns)">
-        <alias:mode name="{.}" on-no-match="shallow-skip" streamable="{$streamable}"/>
+        <alias:mode name="{.}" on-no-match="shallow-skip" streamable="{$schxslt:streamable}"/>
         <xsl:apply-templates select="map:get($patterns, .)/sch:let" mode="#current"/>
         <xsl:apply-templates select="map:get($patterns, .)/sch:rule" mode="#current">
           <xsl:with-param name="mode" as="xs:string" select="."/>
@@ -399,7 +399,7 @@ SOFTWARE.
         <xsl:sequence select="@role"/>
         <xsl:sequence select="@test"/>
         <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
-        <alias:attribute name="location" select="{($location-function, 'path')[1]}(.)" xsl:use-when="not($streamable) or exists($location-function)"/>
+        <alias:attribute name="location" select="{($schxslt:location-function, 'path')[1]}(.)" xsl:use-when="not($schxslt:streamable) or exists($schxslt:location-function)"/>
         <xsl:call-template name="report-diagnostics"/>
         <xsl:call-template name="report-properties"/>
         <xsl:call-template name="report-message"/>
@@ -415,7 +415,7 @@ SOFTWARE.
         <xsl:sequence select="@role"/>
         <xsl:sequence select="@test"/>
         <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
-        <alias:attribute name="location" select="path(.)" xsl:use-when="not($streamable)"/>
+        <alias:attribute name="location" select="path(.)" xsl:use-when="not($schxslt:streamable)"/>
         <xsl:call-template name="report-diagnostics"/>
         <xsl:call-template name="report-properties"/>
         <xsl:call-template name="report-message"/>
