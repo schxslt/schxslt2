@@ -63,6 +63,7 @@ SOFTWARE.
   <xsl:mode name="schxslt:include" on-no-match="shallow-copy"/>
   <xsl:mode name="schxslt:transpile" on-no-match="shallow-skip"/>
 
+  <xsl:mode on-no-match="shallow-skip"/>
   <xsl:mode name="schxslt:copy-verbatim" on-no-match="shallow-copy"/>
   <xsl:mode name="schxslt:copy-message-content" on-no-match="shallow-copy"/>
 
