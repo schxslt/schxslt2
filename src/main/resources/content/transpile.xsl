@@ -413,7 +413,7 @@ SOFTWARE.
     </alias:if>
   </xsl:template>
 
-  <xsl:template match="*" as="element()" mode="copy-verbatim copy-message-content">
+  <xsl:template match="*" as="element()" mode="schxslt:copy-verbatim schxslt:copy-message-content">
     <xsl:element name="{local-name()}" namespace="{namespace-uri()}">
       <xsl:apply-templates select="@*" mode="#current"/>
       <xsl:apply-templates select="node()" mode="#current"/>
