@@ -59,12 +59,12 @@ SOFTWARE.
     -->
   </xsl:param>
 
-  <xsl:mode name="expand" on-no-match="shallow-copy"/>
-  <xsl:mode name="include" on-no-match="shallow-copy"/>
-  <xsl:mode name="transpile" on-no-match="shallow-skip"/>
+  <xsl:mode name="schxslt:expand" on-no-match="shallow-copy"/>
+  <xsl:mode name="schxslt:include" on-no-match="shallow-copy"/>
+  <xsl:mode name="schxslt:transpile" on-no-match="shallow-skip"/>
 
-  <xsl:mode name="copy-verbatim" on-no-match="shallow-copy"/>
-  <xsl:mode name="copy-message-content" on-no-match="shallow-copy"/>
+  <xsl:mode name="schxslt:copy-verbatim" on-no-match="shallow-copy"/>
+  <xsl:mode name="schxslt:copy-message-content" on-no-match="shallow-copy"/>
 
   <xsl:key name="patternByPhaseId" match="sch:pattern" use="../sch:phase[sch:active/@pattern = current()/@id]/@id"/>
   <xsl:key name="patternByPhaseId" match="sch:pattern" use="'#ALL'"/>
@@ -74,12 +74,12 @@ SOFTWARE.
 
   <xsl:template name="perform-include" as="element(sch:schema)">
     <xsl:param name="schema" as="element(sch:schema)" required="yes"/>
-    <xsl:apply-templates select="$schema" mode="include"/>
+    <xsl:apply-templates select="$schema" mode="schxslt:include"/>
   </xsl:template>
 
   <xsl:template name="perform-expand" as="document-node(element(sch:schema))">
     <xsl:param name="schema" as="document-node(element(sch:schema))" required="yes"/>
-    <xsl:apply-templates select="$schema" mode="expand"/>
+    <xsl:apply-templates select="$schema" mode="schxslt:expand"/>
   </xsl:template>
 
   <xsl:template match="sch:schema" as="element(xsl:stylesheet)">
@@ -97,18 +97,18 @@ SOFTWARE.
       </xsl:document>
     </xsl:variable>
 
-    <xsl:apply-templates select="$schema" mode="transpile"/>
+    <xsl:apply-templates select="$schema" mode="schxslt:transpile"/>
 
   </xsl:template>
 
   <!-- Step 1: Include -->
-  <xsl:template match="sch:include" as="element()" mode="include">
+  <xsl:template match="sch:include" as="element()" mode="schxslt:include">
     <xsl:apply-templates select="document(@href)/*" mode="#current">
       <xsl:with-param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
     </xsl:apply-templates>
   </xsl:template>
 
-  <xsl:template match="sch:rule/sch:extends[@href]" as="node()*" mode="include">
+  <xsl:template match="sch:rule/sch:extends[@href]" as="node()*" mode="schxslt:include">
     <xsl:variable name="external" as="element()" select="if (document(@href) instance of document-node()) then document(@href)/*[1] else document(@href)"/>
     <xsl:if test="(namespace-uri($external) ne 'http://purl.oclc.org/dsdl/schematron') or (local-name($external) ne 'rule')">
       <xsl:variable name="message" as="xs:string+">
@@ -140,9 +140,9 @@ SOFTWARE.
   </xsl:template>
 
   <!-- Step 2: Expand -->
-  <xsl:template match="sch:rule[@abstract = 'true'] | sch:pattern[@abstract = 'true']" as="empty-sequence()" mode="expand"/>
+  <xsl:template match="sch:rule[@abstract = 'true'] | sch:pattern[@abstract = 'true']" as="empty-sequence()" mode="schxslt:expand"/>
 
-  <xsl:template match="sch:rule/sch:extends[@rule]" as="node()*" mode="expand">
+  <xsl:template match="sch:rule/sch:extends[@rule]" as="node()*" mode="schxslt:expand">
     <xsl:if test="empty(../../sch:rule[@abstract = 'true'][@id = current()/@rule])">
       <xsl:variable name="message" as="xs:string+">
         The current pattern defines no abstract rule named '{@rule}'.
@@ -157,7 +157,7 @@ SOFTWARE.
     </xsl:apply-templates>
   </xsl:template>
 
-  <xsl:template match="sch:pattern[@is-a]" as="element(sch:pattern)" mode="expand">
+  <xsl:template match="sch:pattern[@is-a]" as="element(sch:pattern)" mode="schxslt:expand">
     <xsl:variable name="is-a" as="element(sch:pattern)?" select="../sch:pattern[@abstract = 'true'][@id = current()/@is-a]"/>
     <xsl:if test="empty($is-a)">
       <xsl:variable name="message" as="xs:string+">
@@ -217,7 +217,7 @@ SOFTWARE.
 
   </xsl:template>
 
-  <xsl:template match="sch:assert/@test | sch:report/@test | sch:rule/@context | sch:value-of/@select | sch:pattern/@documents | sch:name/@path | sch:let/@value | xsl:copy-of[ancestor::sch:property]/@select" mode="expand">
+  <xsl:template match="sch:assert/@test | sch:report/@test | sch:rule/@context | sch:value-of/@select | sch:pattern/@documents | sch:name/@path | sch:let/@value | xsl:copy-of[ancestor::sch:property]/@select" mode="schxslt:expand">
     <xsl:param name="params" as="element(sch:param)*" tunnel="yes"/>
     <xsl:attribute name="{name()}" select="schxslt:replace-params(., $params)"/>
   </xsl:template>
@@ -245,7 +245,7 @@ SOFTWARE.
   </xsl:function>
 
   <!-- Step 3: Transpile -->
-  <xsl:template match="sch:schema" as="element(xsl:stylesheet)" mode="transpile">
+  <xsl:template match="sch:schema" as="element(xsl:stylesheet)" mode="schxslt:transpile">
 
     <xsl:variable name="phases" as="xs:string+" select="schxslt:phases($schxslt:phase, @defaultPhase)"/>
     <xsl:variable name="patterns" as="map(xs:string, element(sch:pattern)+)">
@@ -312,7 +312,7 @@ SOFTWARE.
 
   </xsl:template>
 
-  <xsl:template match="sch:rule" as="element(xsl:template)" mode="transpile">
+  <xsl:template match="sch:rule" as="element(xsl:template)" mode="schxslt:transpile">
     <xsl:param name="mode" as="xs:string" required="yes"/>
 
     <alias:template match="{@context}" mode="{$mode}" priority="{last() - position()}">
@@ -353,33 +353,33 @@ SOFTWARE.
 
   </xsl:template>
 
-  <xsl:template match="sch:schema/sch:let" as="element(xsl:param)" mode="transpile">
+  <xsl:template match="sch:schema/sch:let" as="element(xsl:param)" mode="schxslt:transpile">
     <alias:param name="{@name}">
       <xsl:choose>
         <xsl:when test="@value">
           <xsl:attribute name="select" select="@value"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:apply-templates select="node()" mode="copy-verbatim"/>
+          <xsl:apply-templates select="node()" mode="schxslt:copy-verbatim"/>
         </xsl:otherwise>
       </xsl:choose>
     </alias:param>
   </xsl:template>
 
-  <xsl:template match="sch:let" as="element(xsl:variable)" mode="transpile">
+  <xsl:template match="sch:let" as="element(xsl:variable)" mode="schxslt:transpile">
     <alias:variable name="{@name}">
       <xsl:choose>
         <xsl:when test="@value">
           <xsl:attribute name="select" select="@value"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:apply-templates select="node()" mode="copy-verbatim"/>
+          <xsl:apply-templates select="node()" mode="schxslt:copy-verbatim"/>
         </xsl:otherwise>
       </xsl:choose>
     </alias:variable>
   </xsl:template>
 
-  <xsl:template match="sch:assert" as="element(xsl:if)" mode="transpile">
+  <xsl:template match="sch:assert" as="element(xsl:if)" mode="schxslt:transpile">
     <alias:if test="not({@test})">
       <svrl:failed-assert>
         <xsl:sequence select="@flag"/>
@@ -395,7 +395,7 @@ SOFTWARE.
     </alias:if>
   </xsl:template>
 
-  <xsl:template match="sch:report" as="element(xsl:if)" mode="transpile">
+  <xsl:template match="sch:report" as="element(xsl:if)" mode="schxslt:transpile">
     <alias:if test="{@test}">
       <svrl:successful-report>
         <xsl:sequence select="@flag"/>
@@ -418,19 +418,19 @@ SOFTWARE.
     </xsl:element>
   </xsl:template>
 
-  <xsl:template match="xsl:copy-of[ancestor::sch:property]" as="element(xsl:copy-of)" mode="copy-message-content">
+  <xsl:template match="xsl:copy-of[ancestor::sch:property]" as="element(xsl:copy-of)" mode="schxslt:copy-message-content">
     <xsl:sequence select="."/>
   </xsl:template>
 
-  <xsl:template match="sch:name[@path]" as="element(xsl:value-of)" mode="copy-message-content">
+  <xsl:template match="sch:name[@path]" as="element(xsl:value-of)" mode="schxslt:copy-message-content">
     <alias:value-of select="{@path}"/>
   </xsl:template>
 
-  <xsl:template match="sch:name[not(@path)]" as="element(xsl:value-of)" mode="copy-message-content">
+  <xsl:template match="sch:name[not(@path)]" as="element(xsl:value-of)" mode="schxslt:copy-message-content">
     <alias:value-of select="name()"/>
   </xsl:template>
 
-  <xsl:template match="sch:value-of" as="element(xsl:value-of)" mode="copy-message-content">
+  <xsl:template match="sch:value-of" as="element(xsl:value-of)" mode="schxslt:copy-message-content">
     <alias:value-of select="{@select}"/>
   </xsl:template>
 
@@ -438,7 +438,7 @@ SOFTWARE.
     <xsl:if test="text() | *">
       <svrl:text>
         <xsl:sequence select="@xml:*"/>
-        <xsl:apply-templates select="node()" mode="copy-message-content"/>
+        <xsl:apply-templates select="node()" mode="schxslt:copy-message-content"/>
       </svrl:text>
     </xsl:if>
   </xsl:template>
@@ -453,7 +453,7 @@ SOFTWARE.
           <xsl:sequence select="@see"/>
           <xsl:sequence select="@icon"/>
           <xsl:sequence select="@fpi"/>
-          <xsl:apply-templates select="node()" mode="copy-message-content"/>
+          <xsl:apply-templates select="node()" mode="schxslt:copy-message-content"/>
         </svrl:text>
       </svrl:diagnostic-reference>
     </xsl:for-each>
@@ -471,7 +471,7 @@ SOFTWARE.
           <xsl:sequence select="@see"/>
           <xsl:sequence select="@icon"/>
           <xsl:sequence select="@fpi"/>
-          <xsl:apply-templates select="node()" mode="copy-message-content"/>
+          <xsl:apply-templates select="node()" mode="schxslt:copy-message-content"/>
         </svrl:text>
       </svrl:property-reference>
     </xsl:for-each>
