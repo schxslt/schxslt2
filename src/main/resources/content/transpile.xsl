@@ -261,9 +261,6 @@ SOFTWARE.
         <xsl:namespace name="{@prefix}" select="@uri"/>
       </xsl:for-each>
 
-      <alias:param name="schxslt.phase" static="yes" as="xs:string" select="{schxslt:quote(head($phases))}"/>
-      <alias:param name="schxslt.pattern" static="yes" as="xs:string*" select="()"/>
-
       <xsl:apply-templates select="sch:let" mode="#current"/>
       <xsl:apply-templates select="sch:phase[@id = $phases]/sch:let" mode="#current"/>
 
@@ -279,17 +276,8 @@ SOFTWARE.
 
       <alias:template match="root()" as="element(svrl:schematron-output)">
 
-        <alias:if test="not($schxslt.phase = ({string-join(($phases ! schxslt:quote(.)), ',')}))">
-          <alias:message terminate="yes">
-            <alias:text expand-text="yes">This validation stylesheet was not compiled for validation phase '{{$schxslt.phase}}'.</alias:text>
-          </alias:message>
-        </alias:if>
-
         <svrl:schematron-output>
           <xsl:sequence select="@schemaVersion"/>
-          <alias:if test="$schxslt.phase ne '#ALL'">
-            <alias:attribute name="phase" select="$schxslt.phase"/>
-          </alias:if>
           <xsl:for-each select="sch:ns">
             <svrl:ns-prefix-in-attribute-values prefix="{@prefix}" uri="{@uri}"/>
           </xsl:for-each>
