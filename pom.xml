@@ -51,7 +51,7 @@
             <transformationSet>
               <dir>src/main/resources/content</dir>
               <includes>transpile.xsl</includes>
-              <outputDir>target/xslt-package</outputDir>
+              <outputDir>${project.build.directory}/xslt-package</outputDir>
               <stylesheet>src/util/create-package.xsl</stylesheet>
               <parameters>
                 <parameter>
