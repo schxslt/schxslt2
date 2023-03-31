@@ -80,7 +80,7 @@
         <executions>
           <!-- Build a ZIP file with only the XSLT stylesheets -->
           <execution>
-            <id>zip</id>
+            <id>xslt-only</id>
             <phase>package</phase>
             <goals>
               <goal>single</goal>
@@ -90,6 +90,20 @@
                 <descriptor>src/assembly/xslt-only.xml</descriptor>
               </descriptors>
               <finalName>${project.artifactId}-${project.version}</finalName>
+            </configuration>
+          </execution>
+          <!-- Build a ZIP file with the XSLT package -->
+          <execution>
+            <id>xslt-package</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>src/assembly/xslt-package.xml</descriptor>
+              </descriptors>
+              <finalName>${project.artifactId}-package-${project.version}</finalName>
             </configuration>
           </execution>
         </executions>
