@@ -82,7 +82,8 @@ SOFTWARE.
     <xsl:apply-templates select="$schema" mode="schxslt:expand"/>
   </xsl:template>
 
-  <xsl:template match="sch:schema" as="element(xsl:stylesheet)">
+  <xsl:template name="schxslt:transpile" match="sch:schema" as="element(xsl:stylesheet)">
+    <xsl:context-item as="element(sch:schema)"/>
     <xsl:variable name="schema" as="document-node(element(sch:schema))">
       <xsl:document>
         <xsl:call-template name="schxslt:perform-expand">
