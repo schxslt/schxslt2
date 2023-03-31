@@ -128,7 +128,7 @@ SOFTWARE.
     </xsl:apply-templates>
   </xsl:template>
 
-  <xsl:template match="*" mode="include expand">
+  <xsl:template match="*" mode="schxslt:include schxslt:expand">
     <xsl:param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
     <xsl:variable name="inScopeLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
 
