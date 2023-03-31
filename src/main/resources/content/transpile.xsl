@@ -66,11 +66,11 @@ SOFTWARE.
   <xsl:mode name="schxslt:copy-verbatim" on-no-match="shallow-copy"/>
   <xsl:mode name="schxslt:copy-message-content" on-no-match="shallow-copy"/>
 
-  <xsl:key name="patternByPhaseId" match="sch:pattern" use="../sch:phase[sch:active/@pattern = current()/@id]/@id"/>
-  <xsl:key name="patternByPhaseId" match="sch:pattern" use="'#ALL'"/>
-  <xsl:key name="phaseByPatternId" match="sch:phase" use="sch:active/@pattern"/>
-  <xsl:key name="diagnosticById" match="sch:diagnostic" use="@id"/>
-  <xsl:key name="propertyById" match="sch:property" use="@id"/>
+  <xsl:key name="schxslt:patternByPhaseId" match="sch:pattern" use="../sch:phase[sch:active/@pattern = current()/@id]/@id"/>
+  <xsl:key name="schxslt:patternByPhaseId" match="sch:pattern" use="'#ALL'"/>
+  <xsl:key name="schxslt:phaseByPatternId" match="sch:phase" use="sch:active/@pattern"/>
+  <xsl:key name="schxslt:diagnosticById" match="sch:diagnostic" use="@id"/>
+  <xsl:key name="schxslt:propertyById" match="sch:property" use="@id"/>
 
   <xsl:template name="perform-include" as="element(sch:schema)">
     <xsl:param name="schema" as="element(sch:schema)" required="yes"/>
@@ -200,14 +200,14 @@ SOFTWARE.
 
       <xsl:if test="exists($diagnostics)">
         <xsl:element name="diagnostics" namespace="http://purl.oclc.org/dsdl/schematron">
-          <xsl:apply-templates select="key('diagnosticById', $diagnostics)" mode="#current">
+          <xsl:apply-templates select="key('schxslt:diagnosticById', $diagnostics)" mode="#current">
             <xsl:with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
           </xsl:apply-templates>
         </xsl:element>
       </xsl:if>
       <xsl:if test="exists($properties)">
         <xsl:element name="properties" namespace="http://purl.oclc.org/dsdl/schematron">
-          <xsl:apply-templates select="key('propertyById', $properties)" mode="#current">
+          <xsl:apply-templates select="key('schxslt:propertyById', $properties)" mode="#current">
             <xsl:with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
           </xsl:apply-templates>
         </xsl:element>
@@ -250,7 +250,7 @@ SOFTWARE.
     <xsl:variable name="phases" as="xs:string+" select="schxslt:phases($schxslt:phase, @defaultPhase)"/>
     <xsl:variable name="patterns" as="map(xs:string, element(sch:pattern)+)">
       <xsl:map>
-        <xsl:for-each-group select="key('patternByPhaseId', $phases)" group-by="string(@documents)">
+        <xsl:for-each-group select="key('schxslt:patternByPhaseId', $phases)" group-by="string(@documents)">
           <xsl:map-entry key="concat('group.', generate-id(current-group()[1]))" select="current-group()"/>
         </xsl:for-each-group>
       </xsl:map>
@@ -445,7 +445,7 @@ SOFTWARE.
 
   <xsl:template name="report-diagnostics" as="element(svrl:diagnostic-reference)*">
     <xsl:variable name="diagnostics" as="xs:string*" select="tokenize(normalize-space(@diagnostics))"/>
-    <xsl:for-each select="if (../../sch:diagnostics) then key('diagnosticById', $diagnostics, ../..) else key('diagnosticById', $diagnostics, ancestor::sch:schema)">
+    <xsl:for-each select="if (../../sch:diagnostics) then key('schxslt:diagnosticById', $diagnostics, ../..) else key('schxslt:diagnosticById', $diagnostics, ancestor::sch:schema)">
       <svrl:diagnostic-reference diagnostic="{@id}">
         <svrl:text>
           <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
@@ -461,7 +461,7 @@ SOFTWARE.
 
   <xsl:template name="report-properties" as="element(svrl:property-reference)*">
     <xsl:variable name="properties" as="xs:string*" select="tokenize(normalize-space(@properties))"/>
-    <xsl:for-each select="if (../../sch:properties) then key('propertyById', $properties, ../..) else key('propertyById', $properties, ancestor::sch:schema)">
+    <xsl:for-each select="if (../../sch:properties) then key('schxslt:propertyById', $properties, ../..) else key('schxslt:propertyById', $properties, ancestor::sch:schema)">
       <svrl:property-reference property="{@id}">
         <xsl:sequence select="@role"/>
         <xsl:sequence select="@scheme"/>
