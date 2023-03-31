@@ -36,6 +36,9 @@ SOFTWARE.
 
   <xsl:output indent="yes" use-when="$schxslt:debug"/>
 
+  <xsl:variable name="schxslt:version" as="xs:string"
+                select="if (starts-with('${project.version}', '$')) then 'development' else '${project.version}'"/>
+
   <xsl:param name="schxslt:phase" as="xs:string" select="'#DEFAULT'">
     <!--
         Name of the validation phase. The value '#DEFAULT' selects the pattern in the sch:schema/@defaultPhase attribute
@@ -289,6 +292,7 @@ SOFTWARE.
           <xsl:for-each select="sch:ns">
             <svrl:ns-prefix-in-attribute-values prefix="{@prefix}" uri="{@uri}"/>
           </xsl:for-each>
+          <xsl:comment>SchXslt2 Core {$schxslt:version}</xsl:comment>
           <xsl:for-each select="map:keys($patterns)">
             <xsl:variable name="groupId" as="xs:string" select="."/>
             <xsl:for-each select="map:get($patterns, $groupId)">

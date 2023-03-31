@@ -15,11 +15,19 @@
       <xsl:sequence select="@*"/>
 
       <alias:expose names="schxslt:transpile" component="template" visibility="final"/>
+      <alias:expose names="schxslt:version" component="variable" visibility="final"/>
       <alias:expose names="*" component="*" visibility="private"/>
 
-      <xsl:sequence select="node()"/>
+      <xsl:apply-templates select="node()"/>
 
     </alias:package>
+  </xsl:template>
+
+  <xsl:template match="xsl:variable[@name = 'schxslt:version']">
+    <xsl:copy>
+      <xsl:sequence select="@* except @select"/>
+      <xsl:attribute name="select">'{$version}'</xsl:attribute>
+    </xsl:copy>
   </xsl:template>
 
 </xsl:transform>
