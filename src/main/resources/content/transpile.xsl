@@ -72,12 +72,12 @@ SOFTWARE.
   <xsl:key name="schxslt:diagnosticById" match="sch:diagnostic" use="@id"/>
   <xsl:key name="schxslt:propertyById" match="sch:property" use="@id"/>
 
-  <xsl:template name="perform-include" as="element(sch:schema)">
+  <xsl:template name="schxslt:perform-include" as="element(sch:schema)">
     <xsl:param name="schema" as="element(sch:schema)" required="yes"/>
     <xsl:apply-templates select="$schema" mode="schxslt:include"/>
   </xsl:template>
 
-  <xsl:template name="perform-expand" as="document-node(element(sch:schema))">
+  <xsl:template name="schxslt:perform-expand" as="document-node(element(sch:schema))">
     <xsl:param name="schema" as="document-node(element(sch:schema))" required="yes"/>
     <xsl:apply-templates select="$schema" mode="schxslt:expand"/>
   </xsl:template>
@@ -85,10 +85,10 @@ SOFTWARE.
   <xsl:template match="sch:schema" as="element(xsl:stylesheet)">
     <xsl:variable name="schema" as="document-node(element(sch:schema))">
       <xsl:document>
-        <xsl:call-template name="perform-expand">
+        <xsl:call-template name="schxslt:perform-expand">
           <xsl:with-param name="schema" as="document-node(element(sch:schema))">
             <xsl:document>
-              <xsl:call-template name="perform-include">
+              <xsl:call-template name="schxslt:perform-include">
                 <xsl:with-param name="schema" as="element(sch:schema)" select="."/>
               </xsl:call-template>
             </xsl:document>
