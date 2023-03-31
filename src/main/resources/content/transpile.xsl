@@ -30,11 +30,11 @@ SOFTWARE.
                xmlns:xs="http://www.w3.org/2001/XMLSchema"
                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-  <xsl:param name="debug" static="yes" select="false()"/>
+  <xsl:param name="schxslt:debug" static="yes" select="false()"/>
 
   <xsl:namespace-alias result-prefix="xsl" stylesheet-prefix="alias"/>
 
-  <xsl:output indent="yes" use-when="$debug"/>
+  <xsl:output indent="yes" use-when="$schxslt:debug"/>
 
   <xsl:param name="schxslt:phase" as="xs:string" select="'#DEFAULT'">
     <!--
