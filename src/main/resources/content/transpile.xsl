@@ -251,7 +251,6 @@ SOFTWARE.
 
   <!-- Step 3: Transpile -->
   <xsl:template match="sch:schema" as="element(xsl:stylesheet)" mode="schxslt:transpile">
-    <xsl:param name="phase" as="xs:string" required="yes"/>
 
     <xsl:variable name="phases" as="xs:string+" select="schxslt:phases($schxslt:phase, @defaultPhase)"/>
     <xsl:variable name="patterns" as="map(xs:string, element(sch:pattern)+)">
