@@ -252,10 +252,10 @@ SOFTWARE.
   <!-- Step 3: Transpile -->
   <xsl:template match="sch:schema" as="element(xsl:stylesheet)" mode="schxslt:transpile">
 
-    <xsl:variable name="phases" as="xs:string+" select="schxslt:phases($schxslt:phase, @defaultPhase)"/>
+    <xsl:variable name="phase" as="xs:string" select="if ($schxslt:phase = ('#DEFAULT', '')) then (@defaultPhase, '#ALL')[1] else $schxslt:phase"/>
     <xsl:variable name="patterns" as="map(xs:string, element(sch:pattern)+)">
       <xsl:map>
-        <xsl:for-each-group select="key('schxslt:patternByPhaseId', $phases)" group-by="string(@documents)">
+        <xsl:for-each-group select="key('schxslt:patternByPhaseId', $phase)" group-by="string(@documents)">
           <xsl:map-entry key="concat('group.', generate-id(current-group()[1]))" select="current-group()"/>
         </xsl:for-each-group>
       </xsl:map>
@@ -267,7 +267,7 @@ SOFTWARE.
       </xsl:for-each>
 
       <xsl:apply-templates select="sch:let" mode="#current"/>
-      <xsl:apply-templates select="sch:phase[@id = $phases]/sch:let" mode="#current"/>
+      <xsl:apply-templates select="sch:phase[@id = $phase]/sch:let" mode="#current"/>
 
       <xsl:sequence select="xsl:key | xsl:function"/>
 
@@ -482,16 +482,6 @@ SOFTWARE.
       </svrl:property-reference>
     </xsl:for-each>
   </xsl:template>
-
-  <xsl:function name="schxslt:phases" as="xs:string+">
-    <xsl:param name="phase" as="xs:string"/>
-    <xsl:param name="default" as="attribute(defaultPhase)?"/>
-
-    <xsl:for-each select="tokenize($phase, '[\s,]+') => distinct-values()">
-      <xsl:value-of select="if (. = ('#DEFAULT', '')) then ($default, '#ALL')[1] else ."/>
-    </xsl:for-each>
-
-  </xsl:function>
 
   <xsl:function name="schxslt:quote" as="xs:string">
     <xsl:param name="string" as="xs:string"/>
