@@ -283,6 +283,7 @@ SOFTWARE.
 
         <svrl:schematron-output>
           <xsl:sequence select="@schemaVersion"/>
+          <xsl:attribute name="phase" select="$phase"/>
           <xsl:for-each select="sch:ns">
             <svrl:ns-prefix-in-attribute-values prefix="{@prefix}" uri="{@uri}"/>
           </xsl:for-each>
