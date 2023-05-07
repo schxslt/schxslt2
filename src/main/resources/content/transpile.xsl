@@ -51,7 +51,7 @@ SOFTWARE.
         Set to boolean true() to create a streamable validation stylesheet. This *does not* check the streamability of
         XPath expressions in rules, assertions, variables etc. It merely declares the modes in the validation stylesheet
         to be streamable and removes the @location attribute from the SVRL output when no location function is given
-        becase the default fn:path() is not streamable. Defaults to false().
+        because the default fn:path() is not streamable. Defaults to false().
     -->
   </xsl:param>
 
@@ -483,11 +483,6 @@ SOFTWARE.
       </svrl:property-reference>
     </xsl:for-each>
   </xsl:template>
-
-  <xsl:function name="schxslt:quote" as="xs:string">
-    <xsl:param name="string" as="xs:string"/>
-    <xsl:text>'{$string}'</xsl:text>
-  </xsl:function>
 
   <xsl:function name="schxslt:in-scope-language" as="xs:string?">
     <xsl:param name="context" as="node()"/>
