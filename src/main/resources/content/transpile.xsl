@@ -128,14 +128,19 @@ SOFTWARE.
     </xsl:if>
     <xsl:apply-templates select="$external/node()" mode="#current">
       <xsl:with-param name="sourceLanguage" select="schxslt:in-scope-language(.)"/>
+      <xsl:with-param name="targetNamespaces" as="element(sch:ns)*" select="$external/../../sch:ns"/>
     </xsl:apply-templates>
   </xsl:template>
 
   <xsl:template match="*" mode="schxslt:include schxslt:expand">
     <xsl:param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
+    <xsl:param name="targetNamespaces" as="element(sch:ns)*"/>
     <xsl:variable name="inScopeLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
 
     <xsl:copy>
+      <xsl:for-each select="$targetNamespaces">
+        <xsl:namespace name="{@prefix}" select="@uri"/>
+      </xsl:for-each>
       <xsl:apply-templates select="@*" mode="#current"/>
       <xsl:if test="not(@xml:lang) and not($inScopeLanguage eq $sourceLanguage)">
         <xsl:attribute name="xml:lang" select="$inScopeLanguage"/>
@@ -390,6 +395,7 @@ SOFTWARE.
 
   <xsl:template match="sch:assert" as="element(xsl:if)" mode="schxslt:transpile">
     <alias:if test="not({@test})">
+      <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
       <svrl:failed-assert>
         <xsl:sequence select="@flag"/>
         <xsl:sequence select="@id"/>
@@ -406,6 +412,7 @@ SOFTWARE.
 
   <xsl:template match="sch:report" as="element(xsl:if)" mode="schxslt:transpile">
     <alias:if test="{@test}">
+      <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
       <svrl:successful-report>
         <xsl:sequence select="@flag"/>
         <xsl:sequence select="@id"/>
@@ -483,6 +490,13 @@ SOFTWARE.
           <xsl:apply-templates select="node()" mode="schxslt:copy-message-content"/>
         </svrl:text>
       </svrl:property-reference>
+    </xsl:for-each>
+  </xsl:template>
+
+  <xsl:template name="schxslt:copy-in-scope-namespaces" as="namespace-node()*">
+    <xsl:variable name="context" as="element()" select="."/>
+    <xsl:for-each select="in-scope-prefixes($context)">
+      <xsl:namespace name="{.}" select="namespace-uri-for-prefix(., $context)"/>
     </xsl:for-each>
   </xsl:template>
 
