@@ -111,6 +111,7 @@ SOFTWARE.
     <xsl:variable name="external" as="element()" select="if (document(@href) instance of document-node()) then document(@href)/*[1] else document(@href)"/>
     <xsl:apply-templates select="$external" mode="#current">
       <xsl:with-param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
+      <xsl:with-param name="targetNamespaces" as="element(sch:ns)*" select="$external/ancestor::sch:schema/sch:ns"/>
     </xsl:apply-templates>
   </xsl:template>
 
@@ -329,6 +330,7 @@ SOFTWARE.
     <xsl:param name="mode" as="xs:string" required="yes"/>
 
     <alias:template match="{@context}" mode="{$mode}" priority="{last() - position()}">
+      <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
       <alias:param name="schxslt:pattern" as="xs:string*" select="()"/>
       <alias:choose>
         <alias:when test="'{generate-id(..)}' = $schxslt:pattern">
@@ -368,6 +370,7 @@ SOFTWARE.
 
   <xsl:template match="sch:schema/sch:let" as="element(xsl:param)" mode="schxslt:transpile">
     <alias:param name="{@name}">
+      <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
       <xsl:choose>
         <xsl:when test="@value">
           <xsl:attribute name="select" select="@value"/>
@@ -382,6 +385,7 @@ SOFTWARE.
 
   <xsl:template match="sch:let" as="element(xsl:variable)" mode="schxslt:transpile">
     <alias:variable name="{@name}">
+      <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
       <xsl:choose>
         <xsl:when test="@value">
           <xsl:attribute name="select" select="@value"/>
@@ -436,11 +440,16 @@ SOFTWARE.
   </xsl:template>
 
   <xsl:template match="xsl:copy-of[ancestor::sch:property]" as="element(xsl:copy-of)" mode="schxslt:copy-message-content">
-    <xsl:sequence select="."/>
+    <xsl:copy>
+      <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
+      <xsl:sequence select="node()"/>
+    </xsl:copy>
   </xsl:template>
 
   <xsl:template match="sch:name[@path]" as="element(xsl:value-of)" mode="schxslt:copy-message-content">
-    <alias:value-of select="{@path}"/>
+    <alias:value-of select="{@path}">
+      <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
+    </alias:value-of>
   </xsl:template>
 
   <xsl:template match="sch:name[not(@path)]" as="element(xsl:value-of)" mode="schxslt:copy-message-content">
