@@ -108,7 +108,8 @@ SOFTWARE.
 
   <!-- Step 1: Include -->
   <xsl:template match="sch:include" as="element()" mode="schxslt:include">
-    <xsl:apply-templates select="document(@href)/*" mode="#current">
+    <xsl:variable name="external" as="element()" select="if (document(@href) instance of document-node()) then document(@href)/*[1] else document(@href)"/>
+    <xsl:apply-templates select="$external" mode="#current">
       <xsl:with-param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
     </xsl:apply-templates>
   </xsl:template>
