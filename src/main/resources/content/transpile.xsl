@@ -24,7 +24,7 @@ SOFTWARE.
 <xsl:transform version="3.0" expand-text="yes"
                xmlns:alias="http://www.w3.org/1999/XSL/TransformAlias"
                xmlns:map="http://www.w3.org/2005/xpath-functions/map"
-               xmlns:schxslt="tag:dmaus@dmaus.name,2023:Schematron:SchXslt"
+               xmlns:schxslt="http://www.dmaus.name/ns/2023/schxslt"
                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
                xmlns:svrl="http://purl.oclc.org/dsdl/svrl"
                xmlns:xs="http://www.w3.org/2001/XMLSchema"

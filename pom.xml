@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>name.dmaus.schxslt</groupId>
-  <artifactId>schxslt2-core</artifactId>
+  <artifactId>schxslt2</artifactId>
   <version>1.0.0-SNAPSHOT</version>
 
   <name>SchXslt2 Schematron to XSLT 3.0 transpiler</name>
-  <url>https://git.sr.ht/~dmaus/SchXslt2-Core</url>
+  <url>https://git.sr.ht/~dmaus/schxslt2</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
