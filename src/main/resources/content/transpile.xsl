@@ -442,6 +442,7 @@ SOFTWARE.
   <xsl:template match="xsl:copy-of[ancestor::sch:property]" as="element(xsl:copy-of)" mode="schxslt:copy-message-content">
     <xsl:copy>
       <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
+      <xsl:sequence select="@*"/>
       <xsl:sequence select="node()"/>
     </xsl:copy>
   </xsl:template>
