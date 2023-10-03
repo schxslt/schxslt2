@@ -276,7 +276,7 @@ SOFTWARE.
       <xsl:apply-templates select="sch:let" mode="#current"/>
       <xsl:apply-templates select="sch:phase[@id = $phase]/sch:let" mode="#current"/>
 
-      <xsl:sequence select="xsl:key | xsl:function"/>
+      <xsl:sequence select="xsl:accumulator | xsl:function | xsl:include | xsl:import | xsl:import-schema | xsl:key | xsl:use-package"/>
 
       <xsl:for-each select="map:keys($patterns)">
         <alias:mode name="{.}" on-no-match="shallow-skip" streamable="{$schxslt:streamable}"/>
