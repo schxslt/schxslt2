@@ -371,12 +371,12 @@ SOFTWARE.
   <xsl:template match="sch:schema/sch:let" as="element(xsl:param)" mode="schxslt:transpile">
     <alias:param name="{@name}">
       <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
+      <xsl:sequence select="@as"/>
       <xsl:choose>
         <xsl:when test="@value">
           <xsl:attribute name="select" select="@value"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:attribute name="as">node()*</xsl:attribute>
           <xsl:apply-templates select="node()" mode="schxslt:copy-verbatim"/>
         </xsl:otherwise>
       </xsl:choose>
@@ -386,12 +386,12 @@ SOFTWARE.
   <xsl:template match="sch:let" as="element(xsl:variable)" mode="schxslt:transpile">
     <alias:variable name="{@name}">
       <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
+      <xsl:sequence select="@as"/>
       <xsl:choose>
         <xsl:when test="@value">
           <xsl:attribute name="select" select="@value"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:attribute name="as">node()*</xsl:attribute>
           <xsl:apply-templates select="node()" mode="schxslt:copy-verbatim"/>
         </xsl:otherwise>
       </xsl:choose>
