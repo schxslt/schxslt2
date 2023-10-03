@@ -155,16 +155,18 @@ SOFTWARE.
   <xsl:template match="sch:rule[@abstract = 'true'] | sch:pattern[@abstract = 'true']" as="empty-sequence()" mode="schxslt:expand"/>
 
   <xsl:template match="sch:rule/sch:extends[@rule]" as="node()*" mode="schxslt:expand">
-    <xsl:if test="empty(../../sch:rule[@abstract = 'true'][@id = current()/@rule])">
+    <xsl:variable name="abstract-rule" as="element(sch:rule)"
+                  select="(../../sch:rule, ../../../sch:rules/sch:rule)[@abstract = 'true'][@id = current()/@rule]"/>
+    <xsl:if test="empty($abstract-rule)">
       <xsl:variable name="message" as="xs:string+">
-        The current pattern defines no abstract rule named '{@rule}'.
+        The current pattern or schema defines no abstract rule named '{@rule}'.
       </xsl:variable>
       <xsl:message terminate="yes">
         <xsl:text/>
         <xsl:value-of select="normalize-space(string-join($message))"/>
       </xsl:message>
     </xsl:if>
-    <xsl:apply-templates select="../../sch:rule[@abstract = 'true'][@id = current()/@rule]/node()" mode="#current">
+    <xsl:apply-templates select="$abstract-rule/node()" mode="#current">
       <xsl:with-param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
     </xsl:apply-templates>
   </xsl:template>
