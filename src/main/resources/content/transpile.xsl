@@ -48,10 +48,10 @@ SOFTWARE.
 
   <xsl:param name="schxslt:streamable" as="xs:boolean" select="false()" static="yes">
     <!--
-        Set to boolean true() to create a streamable validation stylesheet. This *does not* check the streamability of
+        Set to boolean true to create a streamable validation stylesheet. This *does not* check the streamability of
         XPath expressions in rules, assertions, variables etc. It merely declares the modes in the validation stylesheet
         to be streamable and removes the @location attribute from the SVRL output when no location function is given
-        because the default fn:path() is not streamable. Defaults to false().
+        because the default fn:path() is not streamable. Defaults to false.
     -->
   </xsl:param>
 
