@@ -4,8 +4,9 @@
   <artifactId>schxslt2</artifactId>
   <version>1.0</version>
 
-  <name>SchXslt2 Schematron to XSLT 3.0 transpiler</name>
+  <name>SchXslt2</name>
   <url>https://git.sr.ht/~dmaus/schxslt2</url>
+  <description>Schematron to XSLT 3.0 transpiler</description>
 
   <distributionManagement>
     <repository>
