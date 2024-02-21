@@ -183,6 +183,18 @@ SOFTWARE.
       </xsl:message>
     </xsl:if>
 
+    <!-- Check if all declared parameters are supplied -->
+    <xsl:variable name="params" as="element(sch:param)*" select="sch:param"/>
+    <xsl:if test="exists($is-a/sch:param[not(@name = $params/@name)])">
+      <xsl:variable name="message" as="xs:string+">
+        Some abstract pattern parameters of '{@is-a}' are declared but not supplied: {$is-a/sch:param[not(@name = $params/@name)]/@name}.
+      </xsl:variable>
+      <xsl:message terminate="yes">
+        <xsl:text/>
+        <xsl:value-of select="normalize-space(string-join($message))"/>
+      </xsl:message>
+    </xsl:if>
+
     <xsl:variable name="instance" as="document-node()">
       <!-- In order to make use of fn:key() in the transpilation stage
            we need to root the preprocessed schema. -->
