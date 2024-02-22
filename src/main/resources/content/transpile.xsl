@@ -184,10 +184,20 @@ SOFTWARE.
     </xsl:if>
 
     <!-- Check if all declared parameters are supplied -->
-    <xsl:variable name="params" as="element(sch:param)*" select="sch:param"/>
-    <xsl:if test="exists($is-a/sch:param[not(@name = $params/@name)])">
+    <xsl:variable name="params-supplied" as="element(sch:param)*" select="sch:param"/>
+    <xsl:variable name="params-declared" as="xs:string*" select="schxslt:declared-params($is-a)"/>
+    <xsl:if test="exists($params-declared[not(. = $params-supplied/@name)])">
       <xsl:variable name="message" as="xs:string+">
-        Some abstract pattern parameters of '{@is-a}' are declared but not supplied: {$is-a/sch:param[not(@name = $params/@name)]/@name}.
+        Some abstract pattern parameters of '{@is-a}' are declared but not supplied: {$params-declared[not(. = $params-supplied/@name)]}.
+      </xsl:variable>
+      <xsl:message terminate="yes">
+        <xsl:text/>
+        <xsl:value-of select="normalize-space(string-join($message))"/>
+      </xsl:message>
+    </xsl:if>
+    <xsl:if test="exists($params-declared) and exists($params-supplied[not(@name = $params-declared)])">
+      <xsl:variable name="message" as="xs:string+">
+        Some abstract pattern parameters of '{@is-a}' are supplied but not declared: {$params-supplied[not(@name = $params-declared)]/@name}.
       </xsl:variable>
       <xsl:message terminate="yes">
         <xsl:text/>
@@ -201,7 +211,7 @@ SOFTWARE.
       <xsl:document>
         <xsl:apply-templates select="$is-a/node()" mode="#current">
           <xsl:with-param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
-          <xsl:with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
+          <xsl:with-param name="params" as="element(sch:param)*" select="$params-supplied" tunnel="yes"/>
         </xsl:apply-templates>
       </xsl:document>
     </xsl:variable>
@@ -528,6 +538,23 @@ SOFTWARE.
   <xsl:function name="schxslt:in-scope-language" as="xs:string?">
     <xsl:param name="context" as="node()"/>
     <xsl:value-of select="lower-case($context/ancestor-or-self::*[@xml:lang][1]/@xml:lang)"/>
+  </xsl:function>
+
+  <xsl:function name="schxslt:declared-params" as="xs:string*">
+    <xsl:param name="pattern" as="element(sch:pattern)"/>
+    <xsl:for-each select="$pattern/processing-instruction('schxslt.declare-param')">
+      <xsl:variable name="name" as="xs:string" select="normalize-space(.)"/>
+      <xsl:if test="not($name castable as xs:NCName)">
+        <xsl:variable name="message" as="xs:string+">
+          The parameter name '{$name}' does not satisfy the restrictions of a XSD non-colonized name (NCName).
+        </xsl:variable>
+        <xsl:message terminate="yes">
+          <xsl:text/>
+          <xsl:value-of select="normalize-space(string-join($message))"/>
+        </xsl:message>
+      </xsl:if>
+      <xsl:value-of select="$name"/>
+    </xsl:for-each>
   </xsl:function>
 
 </xsl:transform>
