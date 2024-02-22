@@ -195,6 +195,7 @@ SOFTWARE.
         <xsl:value-of select="normalize-space(string-join($message))"/>
       </xsl:message>
     </xsl:if>
+    <!-- Check if all supplied parameters are declared -->
     <xsl:if test="exists($params-declared) and exists($params-supplied[not(@name = $params-declared)])">
       <xsl:variable name="message" as="xs:string+">
         Some abstract pattern parameters of '{@is-a}' are supplied but not declared: {$params-supplied[not(@name = $params-declared)]/@name}.
