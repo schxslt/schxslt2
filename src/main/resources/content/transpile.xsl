@@ -190,6 +190,11 @@ SOFTWARE.
         <xsl:for-each select="sch:param">
           <xsl:map-entry key="string(@name)" select="string(@value)"/>
         </xsl:for-each>
+        <xsl:for-each select="map:keys($params-declared)[not(. = current()/sch:param/@name)]">
+          <xsl:if test="map:get($params-declared, .)">
+            <xsl:map-entry key="." select="map:get($params-declared, .)"/>
+          </xsl:if>
+        </xsl:for-each>
       </xsl:map>
     </xsl:variable>
 
