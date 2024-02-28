@@ -219,7 +219,7 @@ SOFTWARE.
       <xsl:document>
         <xsl:apply-templates select="$is-a/node()" mode="#current">
           <xsl:with-param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
-          <xsl:with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
+          <xsl:with-param name="params" as="map(xs:string, xs:string)" select="$params-supplied" tunnel="yes"/>
         </xsl:apply-templates>
       </xsl:document>
     </xsl:variable>
@@ -229,11 +229,11 @@ SOFTWARE.
 
     <xsl:copy>
       <xsl:apply-templates select="@*" mode="#current">
-        <xsl:with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
+        <xsl:with-param name="params" as="map(xs:string, xs:string)" select="$params-supplied" tunnel="yes"/>
       </xsl:apply-templates>
       <xsl:if test="empty(@documents)">
         <xsl:apply-templates select="$is-a/@documents" mode="#current">
-          <xsl:with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
+          <xsl:with-param name="params" as="map(xs:string, xs:string)" select="$params-supplied" tunnel="yes"/>
         </xsl:apply-templates>
       </xsl:if>
       <xsl:if test="empty(@xml:lang) and (schxslt:in-scope-language(.) ne schxslt:in-scope-language($is-a))">
@@ -245,14 +245,14 @@ SOFTWARE.
       <xsl:if test="exists($diagnostics)">
         <xsl:element name="diagnostics" namespace="http://purl.oclc.org/dsdl/schematron">
           <xsl:apply-templates select="key('schxslt:diagnosticById', $diagnostics)" mode="#current">
-            <xsl:with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
+            <xsl:with-param name="params" as="map(xs:string, xs:string)" select="$params-supplied" tunnel="yes"/>
           </xsl:apply-templates>
         </xsl:element>
       </xsl:if>
       <xsl:if test="exists($properties)">
         <xsl:element name="properties" namespace="http://purl.oclc.org/dsdl/schematron">
           <xsl:apply-templates select="key('schxslt:propertyById', $properties)" mode="#current">
-            <xsl:with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
+            <xsl:with-param name="params" as="map(xs:string, xs:string)" select="$params-supplied" tunnel="yes"/>
           </xsl:apply-templates>
         </xsl:element>
       </xsl:if>
@@ -262,28 +262,23 @@ SOFTWARE.
   </xsl:template>
 
   <xsl:template match="sch:assert/@test | sch:report/@test | sch:rule/@context | sch:value-of/@select | sch:pattern/@documents | sch:name/@path | sch:let/@value | xsl:copy-of[ancestor::sch:property]/@select" mode="schxslt:expand">
-    <xsl:param name="params" as="element(sch:param)*" tunnel="yes"/>
+    <xsl:param name="params" as="map(xs:string, xs:string)" select="map{}" tunnel="yes"/>
     <xsl:attribute name="{name()}" select="schxslt:replace-params(., $params)"/>
   </xsl:template>
 
   <xsl:function name="schxslt:replace-params" as="xs:string?">
     <xsl:param name="src" as="xs:string"/>
-    <xsl:param name="params" as="element(sch:param)*"/>
+    <xsl:param name="params" as="map(xs:string, xs:string)"/>
     <xsl:choose>
-      <xsl:when test="empty($params)">
+      <xsl:when test="map:size($params) eq 0">
         <xsl:value-of select="$src"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:variable name="paramsSorted" as="element(sch:param)*">
-          <xsl:for-each select="$params">
-            <xsl:sort select="string-length(@name)" order="descending"/>
-            <xsl:sequence select="."/>
-          </xsl:for-each>
-        </xsl:variable>
-
-        <xsl:variable name="value" select="replace(replace($paramsSorted[1]/@value, '\\', '\\\\'), '\$', '\\\$')"/>
-        <xsl:variable name="src" select="replace($src, concat('(\W*)\$', $paramsSorted[1]/@name, '(\W*)'), concat('$1', $value, '$2'))"/>
-        <xsl:value-of select="schxslt:replace-params($src, $paramsSorted[position() > 1])"/>
+        <xsl:variable name="paramNames" as="xs:string+" select="map:keys($params) => sort((), string-length#1)"/>
+        <xsl:variable name="paramNamesLongest" as="xs:string" select="$paramNames[last()]"/>
+        <xsl:variable name="value" select="replace(replace(map:get($params, $paramNamesLongest), '\\', '\\\\'), '\$', '\\\$')"/>
+        <xsl:variable name="src" select="replace($src, concat('(\W*)\$', $paramNamesLongest, '(\W*)'), concat('$1', $value, '$2'))"/>
+        <xsl:value-of select="schxslt:replace-params($src, map:remove($params, $paramNamesLongest))"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:function>
