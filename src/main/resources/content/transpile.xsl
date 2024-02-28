@@ -184,18 +184,11 @@ SOFTWARE.
     </xsl:if>
 
     <!-- Check if all declared parameters are supplied -->
-    <xsl:variable name="params-declared" as="map(xs:string, xs:string?)" select="schxslt:declared-params($is-a)"/>
-    <xsl:variable name="params-supplied" as="map(xs:string, xs:string)">
-      <xsl:map>
-        <xsl:for-each select="sch:param">
-          <xsl:map-entry key="string(@name)" select="string(@value)"/>
-        </xsl:for-each>
-      </xsl:map>
-    </xsl:variable>
-
-    <xsl:if test="exists(map:keys($params-declared)[not(. = map:keys($params-supplied))])">
+    <xsl:variable name="params-supplied" as="element(sch:param)*" select="sch:param"/>
+    <xsl:variable name="params-declared" as="xs:string*" select="schxslt:declared-params($is-a)"/>
+    <xsl:if test="exists($params-declared[not(. = $params-supplied/@name)])">
       <xsl:variable name="message" as="xs:string+">
-        Some abstract pattern parameters of '{@is-a}' are declared but not supplied: {map:keys($params-declared)[not(. = map:keys($params-supplied))]}.
+        Some abstract pattern parameters of '{@is-a}' are declared but not supplied: {$params-declared[not(. = $params-supplied/@name)]}.
       </xsl:variable>
       <xsl:message terminate="yes">
         <xsl:text/>
@@ -203,9 +196,9 @@ SOFTWARE.
       </xsl:message>
     </xsl:if>
     <!-- Check if all supplied parameters are declared -->
-    <xsl:if test="(map:size($params-declared) gt 0) and exists(map:keys($params-supplied)[not(. = map:keys($params-declared))])">
+    <xsl:if test="exists($params-declared) and exists($params-supplied[not(@name = $params-declared)])">
       <xsl:variable name="message" as="xs:string+">
-        Some abstract pattern parameters of '{@is-a}' are supplied but not declared: {map:keys($params-supplied)[not(. = map:keys($params-declared))]}.
+        Some abstract pattern parameters of '{@is-a}' are supplied but not declared: {$params-supplied[not(@name = $params-declared)]/@name}.
       </xsl:variable>
       <xsl:message terminate="yes">
         <xsl:text/>
@@ -219,7 +212,7 @@ SOFTWARE.
       <xsl:document>
         <xsl:apply-templates select="$is-a/node()" mode="#current">
           <xsl:with-param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
-          <xsl:with-param name="params" as="map(xs:string, xs:string)" select="$params-supplied" tunnel="yes"/>
+          <xsl:with-param name="params" as="element(sch:param)*" select="$params-supplied" tunnel="yes"/>
         </xsl:apply-templates>
       </xsl:document>
     </xsl:variable>
@@ -229,11 +222,11 @@ SOFTWARE.
 
     <xsl:copy>
       <xsl:apply-templates select="@*" mode="#current">
-        <xsl:with-param name="params" as="map(xs:string, xs:string)" select="$params-supplied" tunnel="yes"/>
+        <xsl:with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
       </xsl:apply-templates>
       <xsl:if test="empty(@documents)">
         <xsl:apply-templates select="$is-a/@documents" mode="#current">
-          <xsl:with-param name="params" as="map(xs:string, xs:string)" select="$params-supplied" tunnel="yes"/>
+          <xsl:with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
         </xsl:apply-templates>
       </xsl:if>
       <xsl:if test="empty(@xml:lang) and (schxslt:in-scope-language(.) ne schxslt:in-scope-language($is-a))">
@@ -245,14 +238,14 @@ SOFTWARE.
       <xsl:if test="exists($diagnostics)">
         <xsl:element name="diagnostics" namespace="http://purl.oclc.org/dsdl/schematron">
           <xsl:apply-templates select="key('schxslt:diagnosticById', $diagnostics)" mode="#current">
-            <xsl:with-param name="params" as="map(xs:string, xs:string)" select="$params-supplied" tunnel="yes"/>
+            <xsl:with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
           </xsl:apply-templates>
         </xsl:element>
       </xsl:if>
       <xsl:if test="exists($properties)">
         <xsl:element name="properties" namespace="http://purl.oclc.org/dsdl/schematron">
           <xsl:apply-templates select="key('schxslt:propertyById', $properties)" mode="#current">
-            <xsl:with-param name="params" as="map(xs:string, xs:string)" select="$params-supplied" tunnel="yes"/>
+            <xsl:with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
           </xsl:apply-templates>
         </xsl:element>
       </xsl:if>
@@ -262,23 +255,28 @@ SOFTWARE.
   </xsl:template>
 
   <xsl:template match="sch:assert/@test | sch:report/@test | sch:rule/@context | sch:value-of/@select | sch:pattern/@documents | sch:name/@path | sch:let/@value | xsl:copy-of[ancestor::sch:property]/@select" mode="schxslt:expand">
-    <xsl:param name="params" as="map(xs:string, xs:string)" select="map{}" tunnel="yes"/>
+    <xsl:param name="params" as="element(sch:param)*" tunnel="yes"/>
     <xsl:attribute name="{name()}" select="schxslt:replace-params(., $params)"/>
   </xsl:template>
 
   <xsl:function name="schxslt:replace-params" as="xs:string?">
     <xsl:param name="src" as="xs:string"/>
-    <xsl:param name="params" as="map(xs:string, xs:string)"/>
+    <xsl:param name="params" as="element(sch:param)*"/>
     <xsl:choose>
-      <xsl:when test="map:size($params) eq 0">
+      <xsl:when test="empty($params)">
         <xsl:value-of select="$src"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:variable name="paramNames" as="xs:string+" select="map:keys($params) => sort((), string-length#1)"/>
-        <xsl:variable name="paramNamesLongest" as="xs:string" select="$paramNames[last()]"/>
-        <xsl:variable name="value" select="replace(replace(map:get($params, $paramNamesLongest), '\\', '\\\\'), '\$', '\\\$')"/>
-        <xsl:variable name="src" select="replace($src, concat('(\W*)\$', $paramNamesLongest, '(\W*)'), concat('$1', $value, '$2'))"/>
-        <xsl:value-of select="schxslt:replace-params($src, map:remove($params, $paramNamesLongest))"/>
+        <xsl:variable name="paramsSorted" as="element(sch:param)*">
+          <xsl:for-each select="$params">
+            <xsl:sort select="string-length(@name)" order="descending"/>
+            <xsl:sequence select="."/>
+          </xsl:for-each>
+        </xsl:variable>
+
+        <xsl:variable name="value" select="replace(replace($paramsSorted[1]/@value, '\\', '\\\\'), '\$', '\\\$')"/>
+        <xsl:variable name="src" select="replace($src, concat('(\W*)\$', $paramsSorted[1]/@name, '(\W*)'), concat('$1', $value, '$2'))"/>
+        <xsl:value-of select="schxslt:replace-params($src, $paramsSorted[position() > 1])"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:function>
@@ -543,34 +541,21 @@ SOFTWARE.
     <xsl:value-of select="lower-case($context/ancestor-or-self::*[@xml:lang][1]/@xml:lang)"/>
   </xsl:function>
 
-  <xsl:function name="schxslt:declared-params" as="map(xs:string, xs:string?)">
+  <xsl:function name="schxslt:declared-params" as="xs:string*">
     <xsl:param name="pattern" as="element(sch:pattern)"/>
-    <xsl:map>
-      <xsl:for-each select="$pattern/processing-instruction('schxslt.declare-param')">
-        <xsl:variable name="tokens" as="xs:string*" select="tokenize(normalize-space(.), '\s+')"/>
-        <xsl:variable name="value" as="xs:string?" select="$tokens[2]"/>
-        <xsl:variable name="name" as="xs:string" select="$tokens[1]"/>
-        <xsl:if test="count($tokens) gt 2">
-          <xsl:variable name="message" as="xs:string+">
-            The abstract pattern declaration '{$tokens}' contains too much content.
-          </xsl:variable>
-          <xsl:message terminate="yes">
-            <xsl:text/>
-            <xsl:value-of select="normalize-space(string-join($message))"/>
-          </xsl:message>
-        </xsl:if>
-        <xsl:if test="not($name castable as xs:NCName)">
-          <xsl:variable name="message" as="xs:string+">
-            The parameter name '{$name}' does not satisfy the restrictions of a XSD non-colonized name (NCName).
-          </xsl:variable>
-          <xsl:message terminate="yes">
-            <xsl:text/>
-            <xsl:value-of select="normalize-space(string-join($message))"/>
-          </xsl:message>
-        </xsl:if>
-        <xsl:map-entry key="$name" select="$value"/>
-      </xsl:for-each>
-    </xsl:map>
+    <xsl:for-each select="$pattern/processing-instruction('schxslt.declare-param')">
+      <xsl:variable name="name" as="xs:string" select="normalize-space(.)"/>
+      <xsl:if test="not($name castable as xs:NCName)">
+        <xsl:variable name="message" as="xs:string+">
+          The parameter name '{$name}' does not satisfy the restrictions of a XSD non-colonized name (NCName).
+        </xsl:variable>
+        <xsl:message terminate="yes">
+          <xsl:text/>
+          <xsl:value-of select="normalize-space(string-join($message))"/>
+        </xsl:message>
+      </xsl:if>
+      <xsl:value-of select="$name"/>
+    </xsl:for-each>
   </xsl:function>
 
 </xsl:transform>
