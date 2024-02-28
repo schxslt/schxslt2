@@ -184,7 +184,7 @@ SOFTWARE.
     </xsl:if>
 
     <!-- Check if all declared parameters are supplied -->
-    <xsl:variable name="params-declared" as="xs:string*" select="schxslt:declared-params($is-a)"/>
+    <xsl:variable name="params-declared" as="map(xs:string, xs:string?)" select="schxslt:declared-params($is-a)"/>
     <xsl:variable name="params-supplied" as="map(xs:string, xs:string)">
       <xsl:map>
         <xsl:for-each select="sch:param">
@@ -193,9 +193,9 @@ SOFTWARE.
       </xsl:map>
     </xsl:variable>
 
-    <xsl:if test="exists($params-declared[not(. = map:keys($params-supplied))])">
+    <xsl:if test="exists(map:keys($params-declared)[not(. = map:keys($params-supplied))])">
       <xsl:variable name="message" as="xs:string+">
-        Some abstract pattern parameters of '{@is-a}' are declared but not supplied: {$params-declared[not(. = map:keys($params-supplied))]}.
+        Some abstract pattern parameters of '{@is-a}' are declared but not supplied: {map:keys($params-declared)[not(. = map:keys($params-supplied))]}.
       </xsl:variable>
       <xsl:message terminate="yes">
         <xsl:text/>
@@ -203,9 +203,9 @@ SOFTWARE.
       </xsl:message>
     </xsl:if>
     <!-- Check if all supplied parameters are declared -->
-    <xsl:if test="exists($params-declared) and exists(map:keys($params-supplied)[not(. = $params-declared)])">
+    <xsl:if test="(map:size($params-declared) gt 0) and exists(map:keys($params-supplied)[not(. = map:keys($params-declared))])">
       <xsl:variable name="message" as="xs:string+">
-        Some abstract pattern parameters of '{@is-a}' are supplied but not declared: {map:keys($params-supplied)[not(. = $params-declared)]}.
+        Some abstract pattern parameters of '{@is-a}' are supplied but not declared: {map:keys($params-supplied)[not(. = map:keys($params-declared))]}.
       </xsl:variable>
       <xsl:message terminate="yes">
         <xsl:text/>
@@ -543,21 +543,34 @@ SOFTWARE.
     <xsl:value-of select="lower-case($context/ancestor-or-self::*[@xml:lang][1]/@xml:lang)"/>
   </xsl:function>
 
-  <xsl:function name="schxslt:declared-params" as="xs:string*">
+  <xsl:function name="schxslt:declared-params" as="map(xs:string, xs:string?)">
     <xsl:param name="pattern" as="element(sch:pattern)"/>
-    <xsl:for-each select="$pattern/processing-instruction('schxslt.declare-param')">
-      <xsl:variable name="name" as="xs:string" select="normalize-space(.)"/>
-      <xsl:if test="not($name castable as xs:NCName)">
-        <xsl:variable name="message" as="xs:string+">
-          The parameter name '{$name}' does not satisfy the restrictions of a XSD non-colonized name (NCName).
-        </xsl:variable>
-        <xsl:message terminate="yes">
-          <xsl:text/>
-          <xsl:value-of select="normalize-space(string-join($message))"/>
-        </xsl:message>
-      </xsl:if>
-      <xsl:value-of select="$name"/>
-    </xsl:for-each>
+    <xsl:map>
+      <xsl:for-each select="$pattern/processing-instruction('schxslt.declare-param')">
+        <xsl:variable name="tokens" as="xs:string*" select="tokenize(normalize-space(.), '\s+')"/>
+        <xsl:variable name="value" as="xs:string?" select="$tokens[2]"/>
+        <xsl:variable name="name" as="xs:string" select="$tokens[1]"/>
+        <xsl:if test="count($tokens) gt 2">
+          <xsl:variable name="message" as="xs:string+">
+            The abstract pattern declaration '{$tokens}' contains too much content.
+          </xsl:variable>
+          <xsl:message terminate="yes">
+            <xsl:text/>
+            <xsl:value-of select="normalize-space(string-join($message))"/>
+          </xsl:message>
+        </xsl:if>
+        <xsl:if test="not($name castable as xs:NCName)">
+          <xsl:variable name="message" as="xs:string+">
+            The parameter name '{$name}' does not satisfy the restrictions of a XSD non-colonized name (NCName).
+          </xsl:variable>
+          <xsl:message terminate="yes">
+            <xsl:text/>
+            <xsl:value-of select="normalize-space(string-join($message))"/>
+          </xsl:message>
+        </xsl:if>
+        <xsl:map-entry key="$name" select="$value"/>
+      </xsl:for-each>
+    </xsl:map>
   </xsl:function>
 
 </xsl:transform>
