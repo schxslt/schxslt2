@@ -184,6 +184,7 @@ SOFTWARE.
     </xsl:if>
 
     <!-- Check if all declared parameters are supplied -->
+    <xsl:variable name="params-declared" as="xs:string*" select="schxslt:declared-params($is-a)"/>
     <xsl:variable name="params-supplied" as="map(xs:string, xs:string)">
       <xsl:map>
         <xsl:for-each select="sch:param">
@@ -191,7 +192,6 @@ SOFTWARE.
         </xsl:for-each>
       </xsl:map>
     </xsl:variable>
-    <xsl:variable name="params-declared" as="xs:string*" select="schxslt:declared-params($is-a)"/>
 
     <xsl:if test="exists($params-declared[not(. = map:keys($params-supplied))])">
       <xsl:variable name="message" as="xs:string+">
