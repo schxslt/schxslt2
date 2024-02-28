@@ -184,11 +184,18 @@ SOFTWARE.
     </xsl:if>
 
     <!-- Check if all declared parameters are supplied -->
-    <xsl:variable name="params-supplied" as="element(sch:param)*" select="sch:param"/>
+    <xsl:variable name="params-supplied" as="map(xs:string, xs:string)">
+      <xsl:map>
+        <xsl:for-each select="sch:param">
+          <xsl:map-entry key="string(@name)" select="string(@value)"/>
+        </xsl:for-each>
+      </xsl:map>
+    </xsl:variable>
     <xsl:variable name="params-declared" as="xs:string*" select="schxslt:declared-params($is-a)"/>
-    <xsl:if test="exists($params-declared[not(. = $params-supplied/@name)])">
+
+    <xsl:if test="exists($params-declared[not(. = map:keys($params-supplied))])">
       <xsl:variable name="message" as="xs:string+">
-        Some abstract pattern parameters of '{@is-a}' are declared but not supplied: {$params-declared[not(. = $params-supplied/@name)]}.
+        Some abstract pattern parameters of '{@is-a}' are declared but not supplied: {$params-declared[not(. = map:keys($params-supplied))]}.
       </xsl:variable>
       <xsl:message terminate="yes">
         <xsl:text/>
@@ -196,9 +203,9 @@ SOFTWARE.
       </xsl:message>
     </xsl:if>
     <!-- Check if all supplied parameters are declared -->
-    <xsl:if test="exists($params-declared) and exists($params-supplied[not(@name = $params-declared)])">
+    <xsl:if test="exists($params-declared) and exists(map:keys($params-supplied)[not(. = $params-declared)])">
       <xsl:variable name="message" as="xs:string+">
-        Some abstract pattern parameters of '{@is-a}' are supplied but not declared: {$params-supplied[not(@name = $params-declared)]/@name}.
+        Some abstract pattern parameters of '{@is-a}' are supplied but not declared: {map:keys($params-supplied)[not(. = $params-declared)]}.
       </xsl:variable>
       <xsl:message terminate="yes">
         <xsl:text/>
@@ -212,7 +219,7 @@ SOFTWARE.
       <xsl:document>
         <xsl:apply-templates select="$is-a/node()" mode="#current">
           <xsl:with-param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
-          <xsl:with-param name="params" as="element(sch:param)*" select="$params-supplied" tunnel="yes"/>
+          <xsl:with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
         </xsl:apply-templates>
       </xsl:document>
     </xsl:variable>
