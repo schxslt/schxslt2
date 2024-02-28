@@ -70,6 +70,20 @@ This proposal adds support for the following XSLT elements:
 * xsl:include
 * xsl:use-package
 
+### Declare abstract pattern parameters
+
+To address the shortcomings discussed in [Proposal
+8](https://github.com/Schematron/schematron-enhancement-proposals/issues/8) SchXslt2 supports a processing instruction
+```schxslt.declare-param``` as a child of an abstract pattern that declares an abstract pattern parameter.
+
+```
+<?schxslt.declare-param <name> ?>
+```
+
+If the processing instruction is used, the transpiler terminates with an error if a declared parameter is not provided,
+and if a provided parameter ist not declared.
+
+
 ## Limitations
 
 SchXslt2 does not implement proper scoping rules of pattern and phase variables. Schema, pattern, and phase variables
