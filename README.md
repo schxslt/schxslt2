@@ -31,6 +31,11 @@ default ```fn:path()``` is not streamable. Defaults to ```false```.
 Name of a ```function f($context as node()) as xs:string``` that provides location information for the SVRL
 report. Defaults to ```fn:path()``` when not set.
 
+### schxslt:expand-text
+
+When set to boolean ```true```, the validation stylesheet globally enables text value templates and you may use them in
+assertion or diagnostic messages. Defaults to ```false```.
+
 ## Enhancements
 
 ### Typed variables

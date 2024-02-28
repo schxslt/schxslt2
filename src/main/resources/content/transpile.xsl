@@ -46,6 +46,13 @@ SOFTWARE.
     -->
   </xsl:param>
 
+  <xsl:param name="schxslt:expand-text" as="xs:boolean" select="false()">
+    <!--
+        When set to boolean true, the validation stylesheet globally enables text value templates and you may use them
+        in assertion or diagnostic messages. Defaults to false.
+    -->
+  </xsl:param>
+
   <xsl:param name="schxslt:streamable" as="xs:boolean" select="false()" static="yes">
     <!--
         Set to boolean true to create a streamable validation stylesheet. This *does not* check the streamability of
@@ -293,7 +300,7 @@ SOFTWARE.
       </xsl:map>
     </xsl:variable>
 
-    <alias:stylesheet version="3.0">
+    <alias:stylesheet version="3.0" expand-text="{$schxslt:expand-text}">
       <xsl:for-each select="sch:ns">
         <xsl:namespace name="{@prefix}" select="@uri"/>
       </xsl:for-each>
