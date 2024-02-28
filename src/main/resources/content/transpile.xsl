@@ -305,6 +305,8 @@ SOFTWARE.
         <xsl:namespace name="{@prefix}" select="@uri"/>
       </xsl:for-each>
 
+      <alias:variable name="schxslt:phase" as="xs:string" select="'{$phase}'"/>
+
       <xsl:apply-templates select="sch:let" mode="#current"/>
       <xsl:apply-templates select="sch:phase[@id = $phase]/sch:let" mode="#current"/>
 

@@ -88,6 +88,10 @@ To address the shortcomings discussed in [Proposal
 If the processing instruction is used, the transpiler terminates with an error if a declared parameter is not provided,
 and if a provided parameter ist not declared.
 
+### Introspection
+
+Expressions in the validation stylesheet can access the effective phase it was compiled for by using the global variable
+```Q{http://dmaus.name/ns/2023/schxslt}phase```.
 
 ## Limitations
 
