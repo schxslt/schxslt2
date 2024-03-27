@@ -78,15 +78,18 @@ This proposal adds support for the following XSLT elements:
 ### Declare abstract pattern parameters
 
 To address the shortcomings discussed in [Proposal
-8](https://github.com/Schematron/schematron-enhancement-proposals/issues/8) SchXslt2 supports a processing instruction
-```schxslt.declare-param``` as a child of an abstract pattern that declares an abstract pattern parameter.
+8](https://github.com/Schematron/schematron-enhancement-proposals/issues/8) SchXslt2 supports the ```sch:param```
+element without a ```@value``` attribute as child of an abstract pattern to declare an abstract pattern parameter.
 
 ```
-<?schxslt.declare-param <name> ?>
+<sch:pattern id="a-001" abstract="true">
+  <sch:paran name="_placeholder"/>
+  ...
+</sch:pattern>
 ```
 
-If the processing instruction is used, the transpiler terminates with an error if a declared parameter is not provided,
-and if a provided parameter ist not declared.
+If at least one ```sch:param``` element is present, the transpiler terminates with an error if a declared parameter is
+not provided, and if a provided parameter ist not declared.
 
 ### Introspection
 
