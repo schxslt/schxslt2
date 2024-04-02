@@ -318,6 +318,9 @@ SOFTWARE.
 
       <xsl:for-each select="map:keys($patterns)">
         <alias:mode name="{.}" on-no-match="shallow-skip" streamable="{$schxslt:streamable}"/>
+        <alias:template match="*" mode="{.}" priority="-10">
+          <alias:apply-templates select="node()" mode="#current"/>
+        </alias:template>
         <xsl:apply-templates select="map:get($patterns, .)/sch:let" mode="#current"/>
         <xsl:apply-templates select="map:get($patterns, .)/sch:rule" mode="#current">
           <xsl:with-param name="mode" as="xs:string" select="."/>
