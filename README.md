@@ -13,25 +13,29 @@ Reporting Language) report.
 
 ## Transpiler parameters
 
-### schxslt:phase
+### schxslt:debug as xs:boolean
+
+Enable or disable debugging. When debugging is enable, the validation stylesheet is indented. Defaults to false.
+
+### schxslt:phase as xs:string?
 
 Name of the validation phase. The value ```'#DEFAULT'``` selects the pattern in the ```sch:schema/@defaultPhase```
 attribute or ```'#ALL'```, if this attribute is not present. The value ```'#ALL'``` selects all patterns. Defaults to
 ```'#DEFAULT'```.
 
-### schxslt:streamable
+### schxslt:streamable as xs:boolean
 
 Set to boolean ```true``` to create a streamable validation stylesheet. This *does not* check the streamability of XPath
 expressions in rules, assertions, variables etc. It merely declares the modes in the validation stylesheet to be
 streamable and removes the ```@location``` attribute from the SVRL output when no location function is given because the
 default ```fn:path()``` is not streamable. Defaults to ```false```.
 
-### schxslt:location-function
+### schxslt:location-function as xs:string?
 
 Name of a ```function f($context as node()) as xs:string``` that provides location information for the SVRL
 report. Defaults to ```fn:path()``` when not set.
 
-### schxslt:expand-text
+### schxslt:expand-text as xs:boolean
 
 When set to boolean ```true```, the validation stylesheet globally enables text value templates and you may use them in
 assertion or diagnostic messages. Defaults to ```false```.

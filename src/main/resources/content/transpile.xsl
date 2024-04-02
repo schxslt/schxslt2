@@ -30,9 +30,13 @@ SOFTWARE.
                xmlns:xs="http://www.w3.org/2001/XMLSchema"
                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-  <xsl:param name="schxslt:debug" static="yes" select="false()"/>
-
   <xsl:namespace-alias result-prefix="xsl" stylesheet-prefix="alias"/>
+
+  <xsl:param name="schxslt:debug" static="yes" select="false()">
+    <!--
+        Enable or disable debugging. When debugging is enable, the validation stylesheet is indented. Defaults to false.
+    -->
+  </xsl:param>
 
   <xsl:output indent="yes" use-when="$schxslt:debug"/>
 
