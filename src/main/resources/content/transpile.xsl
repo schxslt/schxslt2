@@ -23,6 +23,7 @@ SOFTWARE.
 -->
 <xsl:transform version="3.0" expand-text="yes"
                xmlns:alias="http://www.w3.org/1999/XSL/TransformAlias"
+               xmlns:err="http://www.w3.org/2005/xqt-errors"
                xmlns:map="http://www.w3.org/2005/xpath-functions/map"
                xmlns:schxslt="http://dmaus.name/ns/2023/schxslt"
                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -70,6 +71,13 @@ SOFTWARE.
     <!--
         Name of a function f($context as node()) as xs:string that provides location information for the SVRL
         report. Defaults to fn:path() when not set.
+    -->
+  </xsl:param>
+
+  <xsl:param name="schxslt:fail-early" as="xs:boolean" select="false()" static="yes">
+    <!--
+        When set to boolean true, the validation stylesheets stops as soon as it encounters the first failed assertion
+        or successful report. Defaults to false.
     -->
   </xsl:param>
 
@@ -349,12 +357,16 @@ SOFTWARE.
               <xsl:when test="map:get($patterns, $groupId)[1]/@documents">
                 <alias:for-each select="{map:get($patterns, $groupId)[1]/@documents}">
                   <alias:source-document href="{{.}}">
-                    <alias:apply-templates select="." mode="{$groupId}"/>
+                    <xsl:call-template name="schxslt:dispatch-validation-group">
+                      <xsl:with-param name="groupId" as="xs:string" select="$groupId"/>
+                    </xsl:call-template>
                   </alias:source-document>
                 </alias:for-each>
               </xsl:when>
               <xsl:otherwise>
-                <alias:apply-templates select="." mode="{$groupId}"/>
+                <xsl:call-template name="schxslt:dispatch-validation-group">
+                  <xsl:with-param name="groupId" as="xs:string" select="$groupId"/>
+                </xsl:call-template>
               </xsl:otherwise>
             </xsl:choose>
 
@@ -442,34 +454,26 @@ SOFTWARE.
   <xsl:template match="sch:assert" as="element(xsl:if)" mode="schxslt:transpile">
     <alias:if test="not({@test})">
       <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
-      <svrl:failed-assert>
-        <xsl:sequence select="@flag"/>
-        <xsl:sequence select="@id"/>
-        <xsl:sequence select="@role"/>
-        <xsl:sequence select="@test"/>
-        <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
-        <alias:attribute name="location" select="{($schxslt:location-function, 'path')[1]}(.)" xsl:use-when="not($schxslt:streamable) or exists($schxslt:location-function)"/>
-        <xsl:call-template name="schxslt:report-diagnostics"/>
-        <xsl:call-template name="schxslt:report-properties"/>
-        <xsl:call-template name="schxslt:report-message"/>
-      </svrl:failed-assert>
+      <alias:variable name="failed-assert" as="element(svrl:failed-assert)">
+        <svrl:failed-assert>
+          <xsl:call-template name="schxslt:failed-assertion-content"/>
+        </svrl:failed-assert>
+      </alias:variable>
+      <alias:message  select="$failed-assert" error-code="schxslt:CatchFailEarly" terminate="yes" xsl:use-when="$schxslt:fail-early"/>
+      <alias:sequence select="$failed-assert"/>
     </alias:if>
   </xsl:template>
 
   <xsl:template match="sch:report" as="element(xsl:if)" mode="schxslt:transpile">
     <alias:if test="{@test}">
       <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
-      <svrl:successful-report>
-        <xsl:sequence select="@flag"/>
-        <xsl:sequence select="@id"/>
-        <xsl:sequence select="@role"/>
-        <xsl:sequence select="@test"/>
-        <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
-        <alias:attribute name="location" select="path(.)" xsl:use-when="not($schxslt:streamable)"/>
-        <xsl:call-template name="schxslt:report-diagnostics"/>
-        <xsl:call-template name="schxslt:report-properties"/>
-        <xsl:call-template name="schxslt:report-message"/>
-      </svrl:successful-report>
+      <alias:variable name="successful-report" as="element(svrl:successful-report)">
+        <svrl:successful-report>
+          <xsl:call-template name="schxslt:failed-assertion-content"/>
+        </svrl:successful-report>
+      </alias:variable>
+      <alias:message  select="$successful-report" error-code="schxslt:CatchFailEarly" terminate="yes" xsl:use-when="$schxslt:fail-early"/>
+      <alias:sequence select="$successful-report"/>
     </alias:if>
   </xsl:template>
 
@@ -543,6 +547,33 @@ SOFTWARE.
         </svrl:text>
       </svrl:property-reference>
     </xsl:for-each>
+  </xsl:template>
+
+  <xsl:template name="schxslt:dispatch-validation-group" as="element(xsl:apply-templates)" use-when="not($schxslt:fail-early)">
+    <xsl:param name="groupId" as="xs:string" required="yes"/>
+    <alias:apply-templates select="." mode="{$groupId}"/>
+  </xsl:template>
+
+  <xsl:template name="schxslt:dispatch-validation-group" as="element(xsl:try)" use-when="$schxslt:fail-early">
+    <xsl:param name="groupId" as="xs:string" required="yes"/>
+    <alias:try>
+      <alias:apply-templates select="." mode="{$groupId}"/>
+      <alias:catch errors="schxslt:CatchFailEarly">
+        <alias:sequence select="$err:value"/>
+      </alias:catch>
+    </alias:try>
+  </xsl:template>
+
+  <xsl:template name="schxslt:failed-assertion-content" as="node()+">
+    <xsl:sequence select="@flag"/>
+    <xsl:sequence select="@id"/>
+    <xsl:sequence select="@role"/>
+    <xsl:sequence select="@test"/>
+    <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
+    <alias:attribute name="location" select="{($schxslt:location-function, 'path')[1]}(.)" xsl:use-when="not($schxslt:streamable) or exists($schxslt:location-function)"/>
+    <xsl:call-template name="schxslt:report-diagnostics"/>
+    <xsl:call-template name="schxslt:report-properties"/>
+    <xsl:call-template name="schxslt:report-message"/>
   </xsl:template>
 
   <xsl:template name="schxslt:copy-in-scope-namespaces" as="namespace-node()*">
