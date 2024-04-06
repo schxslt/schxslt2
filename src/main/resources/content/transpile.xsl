@@ -431,6 +431,9 @@ SOFTWARE.
           <xsl:attribute name="select" select="@value"/>
         </xsl:when>
         <xsl:otherwise>
+          <xsl:if test="not(@as)">
+            <xsl:attribute name="as">node()*</xsl:attribute>
+          </xsl:if>
           <xsl:apply-templates select="node()" mode="schxslt:copy-verbatim"/>
         </xsl:otherwise>
       </xsl:choose>
@@ -446,6 +449,9 @@ SOFTWARE.
           <xsl:attribute name="select" select="@value"/>
         </xsl:when>
         <xsl:otherwise>
+          <xsl:if test="not(@as)">
+            <xsl:attribute name="as">node()*</xsl:attribute>
+          </xsl:if>
           <xsl:apply-templates select="node()" mode="schxslt:copy-verbatim"/>
         </xsl:otherwise>
       </xsl:choose>
