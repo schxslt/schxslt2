@@ -92,7 +92,7 @@ element without a ```@value``` attribute as child of an abstract pattern to decl
 
 ```
 <sch:pattern id="a-001" abstract="true">
-  <sch:paran name="_placeholder"/>
+  <sch:param name="_placeholder"/>
   ...
 </sch:pattern>
 ```
