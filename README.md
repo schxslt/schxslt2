@@ -88,11 +88,13 @@ This proposal adds support for the following XSLT elements:
 
 To address the shortcomings discussed in [Proposal
 8](https://github.com/Schematron/schematron-enhancement-proposals/issues/8) SchXslt2 supports the ```sch:param```
-element without a ```@value``` attribute as child of an abstract pattern to declare an abstract pattern parameter.
+element as child of an abstract pattern to declare an abstract pattern parameter.
+
+As of version 1.2 an abstract pattern parameter may also declare a default value in a ```@value``` attribute.
 
 ```
 <sch:pattern id="a-001" abstract="true">
-  <sch:param name="_placeholder"/>
+  <sch:param name="_placeholder" value="default"/>
   ...
 </sch:pattern>
 ```
