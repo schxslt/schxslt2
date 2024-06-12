@@ -6,6 +6,13 @@ language (ISO/IEC-19757:3).
 SchXslt2 Schematron to XSLT 3.0 transpiler is copyright by David Maus &lt;dmaus@dmaus.name&gt; and released under the
 terms of the MIT license.
 
+## Installating
+
+Every release provides a ZIP file with just the XSLT transpiler for you to download and extract.
+
+In addition, a Java package is published to [Maven Central](https://mvnrepository.com/artifact/name.dmaus.schxslt/schxslt2) 
+for use with Maven or the Java dependency management tool of your choice.
+
 ## Usage
 
 Use the transpiler to create an XSLT transformation that processes a document and returns a SVRL (Schematron Validation
