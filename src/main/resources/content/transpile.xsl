@@ -174,7 +174,7 @@ SOFTWARE.
   <xsl:template match="sch:rule[@abstract = 'true'] | sch:pattern[@abstract = 'true']" as="empty-sequence()" mode="schxslt:expand"/>
 
   <xsl:template match="sch:rule/sch:extends[@rule]" as="node()*" mode="schxslt:expand">
-    <xsl:variable name="abstract-rule" as="element(sch:rule)"
+    <xsl:variable name="abstract-rule" as="element(sch:rule)*"
                   select="(../../sch:rule, ../../../sch:rules/sch:rule)[@abstract = 'true'][@id = current()/@rule]"/>
     <xsl:if test="empty($abstract-rule)">
       <xsl:variable name="message" as="xs:string+">
