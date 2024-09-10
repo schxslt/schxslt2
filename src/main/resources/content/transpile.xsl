@@ -485,10 +485,14 @@ SOFTWARE.
   </xsl:template>
 
   <xsl:template match="*" as="element()" mode="schxslt:copy-verbatim schxslt:copy-message-content">
-    <xsl:element name="{local-name()}" namespace="{namespace-uri()}">
+    <alias:element name="{local-name()}" namespace="{namespace-uri()}">
       <xsl:apply-templates select="@*" mode="#current"/>
       <xsl:apply-templates select="node()" mode="#current"/>
-    </xsl:element>
+    </alias:element>
+  </xsl:template>
+
+  <xsl:template match="@*" as="element()" mode="schxslt:copy-verbatim schxslt:copy-message-content">
+    <alias:attribute name="{local-name()}" namespace="{namespace-uri()}">{.}</alias:attribute>
   </xsl:template>
 
   <xsl:template match="xsl:copy-of[ancestor::sch:property]" as="element(xsl:copy-of)" mode="schxslt:copy-message-content">
