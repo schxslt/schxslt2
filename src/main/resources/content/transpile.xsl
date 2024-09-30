@@ -304,6 +304,7 @@ SOFTWARE.
   <xsl:template match="sch:schema" as="element(xsl:stylesheet)" mode="schxslt:transpile">
 
     <xsl:variable name="phase" as="xs:string" select="if ($schxslt:phase = ('#DEFAULT', '')) then (@defaultPhase, '#ALL')[1] else $schxslt:phase"/>
+    <xsl:variable name="validation-root" as="xs:string" select="(sch:phase[@id = $phase]/@from, 'root()')[1]"/>
     <xsl:variable name="patterns" as="map(xs:string, element(sch:pattern)+)">
       <xsl:map>
         <xsl:for-each-group select="key('schxslt:patternByPhaseId', $phase)" group-by="string(@documents)">
@@ -323,6 +324,8 @@ SOFTWARE.
       <xsl:apply-templates select="sch:phase[@id = $phase]/sch:let" mode="#current"/>
 
       <xsl:sequence select="xsl:accumulator | xsl:function | xsl:include | xsl:import | xsl:import-schema | xsl:key | xsl:use-package"/>
+
+      <alias:mode name="schxslt:validate" on-no-match="shallow-skip" streamable="{$schxslt:streamable}"/>
 
       <xsl:for-each select="map:keys($patterns)">
         <alias:mode name="{.}" on-no-match="shallow-skip" streamable="{$schxslt:streamable}"/>
@@ -345,34 +348,40 @@ SOFTWARE.
             <svrl:ns-prefix-in-attribute-values prefix="{@prefix}" uri="{@uri}"/>
           </xsl:for-each>
           <xsl:comment>SchXslt2 Core {$schxslt:version}</xsl:comment>
-          <xsl:for-each select="map:keys($patterns)">
-            <xsl:variable name="groupId" as="xs:string" select="."/>
-            <xsl:for-each select="map:get($patterns, $groupId)">
-              <svrl:active-pattern>
-                <xsl:sequence select="@id"/>
-                <alias:attribute name="documents" select="{if (@documents) then @documents else 'document-uri(.)'}"/>
-              </svrl:active-pattern>
-            </xsl:for-each>
 
-            <xsl:choose>
-              <xsl:when test="map:get($patterns, $groupId)[1]/@documents">
-                <alias:for-each select="{map:get($patterns, $groupId)[1]/@documents}">
-                  <alias:source-document href="{{.}}">
-                    <xsl:call-template name="schxslt:dispatch-validation-group">
-                      <xsl:with-param name="groupId" as="xs:string" select="$groupId"/>
-                    </xsl:call-template>
-                  </alias:source-document>
-                </alias:for-each>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:call-template name="schxslt:dispatch-validation-group">
-                  <xsl:with-param name="groupId" as="xs:string" select="$groupId"/>
-                </xsl:call-template>
-              </xsl:otherwise>
-            </xsl:choose>
-
-          </xsl:for-each>
+          <alias:apply-templates select="." mode="schxslt:validate"/>
         </svrl:schematron-output>
+
+      </alias:template>
+
+      <alias:template match="{$validation-root}" mode="schxslt:validate">
+        <xsl:for-each select="map:keys($patterns)">
+          <xsl:variable name="groupId" as="xs:string" select="."/>
+          <xsl:for-each select="map:get($patterns, $groupId)">
+            <svrl:active-pattern>
+              <xsl:sequence select="@id"/>
+              <alias:attribute name="documents" select="{if (@documents) then @documents else 'document-uri(.)'}"/>
+            </svrl:active-pattern>
+          </xsl:for-each>
+
+          <xsl:choose>
+            <xsl:when test="map:get($patterns, $groupId)[1]/@documents">
+              <alias:for-each select="{map:get($patterns, $groupId)[1]/@documents}">
+                <alias:source-document href="{{.}}">
+                  <xsl:call-template name="schxslt:dispatch-validation-group">
+                    <xsl:with-param name="groupId" as="xs:string" select="$groupId"/>
+                  </xsl:call-template>
+                </alias:source-document>
+              </alias:for-each>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:call-template name="schxslt:dispatch-validation-group">
+                <xsl:with-param name="groupId" as="xs:string" select="$groupId"/>
+              </xsl:call-template>
+            </xsl:otherwise>
+          </xsl:choose>
+
+        </xsl:for-each>
 
       </alias:template>
 
