@@ -531,7 +531,9 @@ SOFTWARE.
     <xsl:for-each select="if (../../sch:diagnostics) then key('schxslt:diagnosticById', $diagnostics, ../..) else key('schxslt:diagnosticById', $diagnostics, ancestor::sch:schema)">
       <svrl:diagnostic-reference diagnostic="{@id}">
         <svrl:text>
-          <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
+          <xsl:if test="schxslt:in-scope-language(.) ne schxslt:in-scope-language(ancestor::sch:schema)">
+            <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
+          </xsl:if>
           <xsl:sequence select="@xml:space"/>
           <xsl:sequence select="@see"/>
           <xsl:sequence select="@icon"/>
@@ -549,7 +551,9 @@ SOFTWARE.
         <xsl:sequence select="@role"/>
         <xsl:sequence select="@scheme"/>
         <svrl:text>
-          <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
+          <xsl:if test="schxslt:in-scope-language(.) ne schxslt:in-scope-language(ancestor::sch:schema)">
+            <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
+          </xsl:if>
           <xsl:sequence select="@xml:space"/>
           <xsl:sequence select="@see"/>
           <xsl:sequence select="@icon"/>
@@ -580,7 +584,9 @@ SOFTWARE.
     <xsl:sequence select="@id"/>
     <xsl:sequence select="@role"/>
     <xsl:sequence select="@test"/>
-    <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
+    <xsl:if test="schxslt:in-scope-language(.) ne schxslt:in-scope-language(ancestor::sch:schema)">
+      <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
+    </xsl:if>
     <alias:attribute name="location" select="{($schxslt:location-function, 'path')[1]}(.)" xsl:use-when="not($schxslt:streamable) or exists($schxslt:location-function)"/>
     <xsl:call-template name="schxslt:report-diagnostics"/>
     <xsl:call-template name="schxslt:report-properties"/>
