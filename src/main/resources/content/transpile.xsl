@@ -375,6 +375,14 @@ SOFTWARE.
 
             </xsl:for-each>
             <alias:catch>
+              <svrl:error code="{{$err:code}}">
+                <alias:if test="document-uri()">
+                  <alias:attribute name="document" select="document-uri()"/>
+                </alias:if>
+                <alias:if test="$err:description">
+                  <alias:value-of select="$err:description"/>
+                </alias:if>
+              </svrl:error>
               <alias:variable name="message" as="xs:string+" expand-text="yes">
                 Running the ISO Schematron validation failed with a dynamic error.
                 Error code: {{$err:code}} Reason: {{$err:description}}
