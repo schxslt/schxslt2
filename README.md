@@ -47,12 +47,12 @@ report. Defaults to ```fn:path()``` when not set.
 When set to boolean ```true```, the validation stylesheet globally enables text value templates and you may use them in
 assertion or diagnostic messages. Defaults to ```false```.
 
-### schxslt:fail-early
+### schxslt:fail-early as xs:boolean
 
 When set to boolean ```true```, the validation stylesheets stops as soon as it encounters the first failed assertion or
 successful report. Defaults to ```false```.
 
-### schxslt:terminate-validation-on-error
+### schxslt:terminate-validation-on-error as xs:boolean
 
 When set to boolean ```true```, the validation stylesheets terminates the XSLT processor when it encounters a dynamic
 error. Defaults to ```true```.
