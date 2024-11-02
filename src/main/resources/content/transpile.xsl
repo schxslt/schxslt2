@@ -351,6 +351,7 @@ SOFTWARE.
           <xsl:for-each select="sch:ns">
             <svrl:ns-prefix-in-attribute-values prefix="{@prefix}" uri="{@uri}"/>
           </xsl:for-each>
+
           <xsl:comment>SchXslt2 Core {$schxslt:version}</xsl:comment>
 
           <alias:try>
@@ -367,20 +368,19 @@ SOFTWARE.
                 <xsl:when test="map:get($patterns, $groupId)[1]/@documents">
                   <alias:for-each select="{map:get($patterns, $groupId)[1]/@documents}">
                     <alias:source-document href="{{.}}">
-                      <xsl:call-template name="schxslt:dispatch-validation-group">
-                        <xsl:with-param name="groupId" as="xs:string" select="$groupId"/>
-                      </xsl:call-template>
+                      <alias:apply-templates select="." mode="{$groupId}"/>
                     </alias:source-document>
                   </alias:for-each>
                 </xsl:when>
                 <xsl:otherwise>
-                  <xsl:call-template name="schxslt:dispatch-validation-group">
-                    <xsl:with-param name="groupId" as="xs:string" select="$groupId"/>
-                  </xsl:call-template>
+                  <alias:apply-templates select="." mode="{$groupId}"/>
                 </xsl:otherwise>
               </xsl:choose>
 
             </xsl:for-each>
+            <alias:catch code="schxslt:CatchFailEarly" xsl:use-when="$schxslt:fail-early">
+              <alias:sequence select="$err:value"/>
+            </alias:catch>
             <alias:catch>
               <svrl:error code="{{$err:code}}">
                 <alias:if test="document-uri()">
@@ -494,7 +494,9 @@ SOFTWARE.
           <xsl:call-template name="schxslt:failed-assertion-content"/>
         </svrl:failed-assert>
       </alias:variable>
-      <alias:message  select="$failed-assert" error-code="schxslt:CatchFailEarly" terminate="yes" xsl:use-when="$schxslt:fail-early"/>
+      <alias:message  select="$failed-assert" error-code="schxslt:CatchFailEarly" terminate="yes" xsl:use-when="$schxslt:fail-early">
+        <alias:sequence select="$failed-assert"/>
+      </alias:message>
       <alias:sequence select="$failed-assert"/>
     </alias:if>
   </xsl:template>
@@ -507,7 +509,9 @@ SOFTWARE.
           <xsl:call-template name="schxslt:failed-assertion-content"/>
         </svrl:successful-report>
       </alias:variable>
-      <alias:message  select="$successful-report" error-code="schxslt:CatchFailEarly" terminate="yes" xsl:use-when="$schxslt:fail-early"/>
+      <alias:message  select="$successful-report" error-code="schxslt:CatchFailEarly" terminate="yes" xsl:use-when="$schxslt:fail-early">
+        <alias:sequence select="$successful-report"/>
+      </alias:message>
       <alias:sequence select="$successful-report"/>
     </alias:if>
   </xsl:template>
@@ -590,21 +594,6 @@ SOFTWARE.
         </svrl:text>
       </svrl:property-reference>
     </xsl:for-each>
-  </xsl:template>
-
-  <xsl:template name="schxslt:dispatch-validation-group" as="element(xsl:apply-templates)" use-when="not($schxslt:fail-early)">
-    <xsl:param name="groupId" as="xs:string" required="yes"/>
-    <alias:apply-templates select="." mode="{$groupId}"/>
-  </xsl:template>
-
-  <xsl:template name="schxslt:dispatch-validation-group" as="element(xsl:try)" use-when="$schxslt:fail-early">
-    <xsl:param name="groupId" as="xs:string" required="yes"/>
-    <alias:try>
-      <alias:apply-templates select="." mode="{$groupId}"/>
-      <alias:catch errors="schxslt:CatchFailEarly">
-        <alias:sequence select="$err:value"/>
-      </alias:catch>
-    </alias:try>
   </xsl:template>
 
   <xsl:template name="schxslt:failed-assertion-content" as="node()+">
