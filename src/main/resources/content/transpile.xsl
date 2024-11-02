@@ -345,33 +345,46 @@ SOFTWARE.
             <svrl:ns-prefix-in-attribute-values prefix="{@prefix}" uri="{@uri}"/>
           </xsl:for-each>
           <xsl:comment>SchXslt2 Core {$schxslt:version}</xsl:comment>
-          <xsl:for-each select="map:keys($patterns)">
-            <xsl:variable name="groupId" as="xs:string" select="."/>
-            <xsl:for-each select="map:get($patterns, $groupId)">
-              <svrl:active-pattern>
-                <xsl:sequence select="@id"/>
-                <alias:attribute name="documents" select="{if (@documents) then @documents else 'document-uri(.)'}"/>
-              </svrl:active-pattern>
+
+          <alias:try>
+            <xsl:for-each select="map:keys($patterns)">
+              <xsl:variable name="groupId" as="xs:string" select="."/>
+              <xsl:for-each select="map:get($patterns, $groupId)">
+                <svrl:active-pattern>
+                  <xsl:sequence select="@id"/>
+                  <alias:attribute name="documents" select="{if (@documents) then @documents else 'document-uri(.)'}"/>
+                </svrl:active-pattern>
+              </xsl:for-each>
+
+              <xsl:choose>
+                <xsl:when test="map:get($patterns, $groupId)[1]/@documents">
+                  <alias:for-each select="{map:get($patterns, $groupId)[1]/@documents}">
+                    <alias:source-document href="{{.}}">
+                      <xsl:call-template name="schxslt:dispatch-validation-group">
+                        <xsl:with-param name="groupId" as="xs:string" select="$groupId"/>
+                      </xsl:call-template>
+                    </alias:source-document>
+                  </alias:for-each>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:call-template name="schxslt:dispatch-validation-group">
+                    <xsl:with-param name="groupId" as="xs:string" select="$groupId"/>
+                  </xsl:call-template>
+                </xsl:otherwise>
+              </xsl:choose>
+
             </xsl:for-each>
-
-            <xsl:choose>
-              <xsl:when test="map:get($patterns, $groupId)[1]/@documents">
-                <alias:for-each select="{map:get($patterns, $groupId)[1]/@documents}">
-                  <alias:source-document href="{{.}}">
-                    <xsl:call-template name="schxslt:dispatch-validation-group">
-                      <xsl:with-param name="groupId" as="xs:string" select="$groupId"/>
-                    </xsl:call-template>
-                  </alias:source-document>
-                </alias:for-each>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:call-template name="schxslt:dispatch-validation-group">
-                  <xsl:with-param name="groupId" as="xs:string" select="$groupId"/>
-                </xsl:call-template>
-              </xsl:otherwise>
-            </xsl:choose>
-
-          </xsl:for-each>
+            <alias:catch>
+              <alias:variable name="message" as="xs:string+" expand-text="yes">
+                Running the ISO Schematron validation failed with a dynamic error.
+                Error code: {{$err:code}} Reason: {{$err:description}}
+              </alias:variable>
+              <alias:message terminate="yes" error-code="schxslt:ValidationError">
+                <alias:text/>
+                <alias:value-of select="normalize-space(string-join($message))"/>
+              </alias:message>
+            </alias:catch>
+          </alias:try>
         </svrl:schematron-output>
 
       </alias:template>
