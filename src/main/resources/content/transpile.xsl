@@ -494,9 +494,7 @@ SOFTWARE.
           <xsl:call-template name="schxslt:failed-assertion-content"/>
         </svrl:failed-assert>
       </alias:variable>
-      <alias:message  select="$failed-assert" error-code="schxslt:CatchFailEarly" terminate="yes" xsl:use-when="$schxslt:fail-early">
-        <alias:sequence select="$failed-assert"/>
-      </alias:message>
+      <alias:message  select="$failed-assert" error-code="schxslt:CatchFailEarly" terminate="yes" xsl:use-when="$schxslt:fail-early"/>
       <alias:sequence select="$failed-assert"/>
     </alias:if>
   </xsl:template>
@@ -509,9 +507,7 @@ SOFTWARE.
           <xsl:call-template name="schxslt:failed-assertion-content"/>
         </svrl:successful-report>
       </alias:variable>
-      <alias:message  select="$successful-report" error-code="schxslt:CatchFailEarly" terminate="yes" xsl:use-when="$schxslt:fail-early">
-        <alias:sequence select="$successful-report"/>
-      </alias:message>
+      <alias:message  select="$successful-report" error-code="schxslt:CatchFailEarly" terminate="yes" xsl:use-when="$schxslt:fail-early"/>
       <alias:sequence select="$successful-report"/>
     </alias:if>
   </xsl:template>
