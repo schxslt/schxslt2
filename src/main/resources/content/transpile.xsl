@@ -81,6 +81,13 @@ SOFTWARE.
     -->
   </xsl:param>
 
+  <xsl:param name="schxslt:terminate-validation-on-error" as="xs:boolean" select="true()" static="yes">
+    <!--
+        When set to boolean true, the validation stylesheets terminates the XSLT processor when it encounters a dynamic
+        error. Defaults to true.
+    -->
+  </xsl:param>
+
   <xsl:mode name="schxslt:expand" on-no-match="shallow-copy"/>
   <xsl:mode name="schxslt:include" on-no-match="shallow-copy"/>
   <xsl:mode name="schxslt:transpile" on-no-match="shallow-skip"/>
@@ -383,11 +390,11 @@ SOFTWARE.
                   <alias:value-of select="$err:description"/>
                 </alias:if>
               </svrl:error>
-              <alias:variable name="message" as="xs:string+" expand-text="yes">
+              <alias:variable name="message" as="xs:string+" expand-text="yes" xsl:use-when="$schxslt:terminate-validation-on-error">
                 Running the ISO Schematron validation failed with a dynamic error.
                 Error code: {{$err:code}} Reason: {{$err:description}}
               </alias:variable>
-              <alias:message terminate="yes" error-code="schxslt:ValidationError">
+              <alias:message terminate="yes" error-code="schxslt:ValidationError" xsl:use-when="$schxslt:terminate-validation-on-error">
                 <alias:text/>
                 <alias:value-of select="normalize-space(string-join($message))"/>
               </alias:message>
