@@ -52,6 +52,11 @@ assertion or diagnostic messages. Defaults to ```false```.
 When set to boolean ```true```, the validation stylesheets stops as soon as it encounters the first failed assertion or
 successful report. Defaults to ```false```.
 
+### schxslt:terminate-validation-on-error
+
+When set to boolean ```true```, the validation stylesheets terminates the XSLT processor when it encounters a dynamic
+error. Defaults to ```true```.
+
 ## Enhancements
 
 ### Typed variables
@@ -113,6 +118,14 @@ not provided, and if a provided parameter ist not declared.
 
 Expressions in the validation stylesheet can access the effective phase it was compiled for by using the global variable
 ```Q{http://dmaus.name/ns/2023/schxslt}phase```.
+
+### Logging dynamic errors
+
+Dynamic errors during validation are logged by a svrl:error element (see [Proposal
+69](https://github.com/Schematron/schematron-enhancement-proposals/issues/69). 
+
+Unless the static parameter ```schxslt:terminate-validation-on-error``` is set to ```false``` the validation stylesheet still
+terminates the XSLT processor.
 
 ## Limitations
 
