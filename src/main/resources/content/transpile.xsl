@@ -378,7 +378,7 @@ SOFTWARE.
               </xsl:choose>
 
             </xsl:for-each>
-            <alias:catch code="schxslt:CatchFailEarly" xsl:use-when="$schxslt:fail-early">
+            <alias:catch errors="schxslt:CatchFailEarly" xsl:use-when="$schxslt:fail-early">
               <alias:sequence select="$err:value"/>
             </alias:catch>
             <alias:catch>
