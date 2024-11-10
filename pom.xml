@@ -40,6 +40,56 @@
 
   <build>
     <plugins>
+
+      <plugin>
+        <groupId>name.dmaus.schxslt.testsuite.harness</groupId>
+        <artifactId>harness-maven-plugin</artifactId>
+        <version>1.0</version>
+        <dependencies>
+          <!-- https://mvnrepository.com/artifact/net.sf.saxon/Saxon-HE -->
+          <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>Saxon-HE</artifactId>
+            <version>12.4</version>
+          </dependency>
+          <dependency>
+            <groupId>org.xmlresolver</groupId>
+            <artifactId>xmlresolver</artifactId>
+            <version>6.0.4</version>
+          </dependency>
+          <dependency>
+            <groupId>name.dmaus.schxslt</groupId>
+            <artifactId>schematron-conformance</artifactId>
+            <version>2.0</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <executions>
+            <execution>
+              <label>ISO Schematron Conformance</label>
+              <factoryClassName>net.sf.saxon.TransformerFactoryImpl</factoryClassName>
+              <queryBinding>xslt3</queryBinding>
+              <stylesheets>
+                <param>src/main/resources/content/transpile.xsl</param>
+              </stylesheets>
+              <locations>
+                <conformanceLocation>
+                  <location>iso-schematron-xslt-3.xml</location>
+                </conformanceLocation>
+              </locations>
+            </execution>
+          </executions>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>test</phase>
+            <goals>
+              <goal>run-testsuites</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <version>3.3.0</version>
