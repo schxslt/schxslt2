@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>name.dmaus.schxslt</groupId>
   <artifactId>schxslt2</artifactId>
-  <version>1.2</version>
+  <version>1.2.1</version>
 
   <name>SchXslt2</name>
   <url>https://git.sr.ht/~dmaus/schxslt2</url>
@@ -186,6 +186,14 @@
         </executions>
       </plugin>
     </plugins>
+
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+
   </build>
 
 </project>
