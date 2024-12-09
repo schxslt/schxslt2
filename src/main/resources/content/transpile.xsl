@@ -618,4 +618,9 @@ SOFTWARE.
     <xsl:value-of select="lower-case($context/ancestor-or-self::*[@xml:lang][1]/@xml:lang)"/>
   </xsl:function>
 
+  <xsl:function name="schxslt:protect-curlies" as="xs:string">
+    <xsl:param name="value" as="xs:string"/>
+    <xsl:value-of select="$value => replace('\{', '{{') => replace('\}', '}}')"/>
+  </xsl:function>
+
 </xsl:transform>
