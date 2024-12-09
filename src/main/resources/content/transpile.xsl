@@ -613,6 +613,13 @@ SOFTWARE.
     </xsl:for-each>
   </xsl:template>
 
+  <xsl:template name="schxslt:copy-attributes" as="attribute()*">
+    <xsl:param name="attributes" as="attribute()*" required="yes"/>
+    <xsl:for-each select="$attributes">
+      <xsl:attribute name="{name()}" select="schxslt:protect-curlies(.)"/>
+    </xsl:for-each>
+  </xsl:template>
+
   <xsl:function name="schxslt:in-scope-language" as="xs:string?">
     <xsl:param name="context" as="node()"/>
     <xsl:value-of select="lower-case($context/ancestor-or-self::*[@xml:lang][1]/@xml:lang)"/>
