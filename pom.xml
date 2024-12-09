@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>name.dmaus.schxslt</groupId>
   <artifactId>schxslt2</artifactId>
-  <version>1.2.1</version>
+  <version>1.2-SNAPSHOT</version>
 
   <name>SchXslt2</name>
   <url>https://git.sr.ht/~dmaus/schxslt2</url>
@@ -76,6 +76,20 @@
                 <conformanceLocation>
                   <location>iso-schematron-xslt-3.xml</location>
                 </conformanceLocation>
+              </locations>
+            </execution>
+
+            <execution>
+              <label>Bugs and Features</label>
+              <factoryClassName>net.sf.saxon.TransformerFactoryImpl</factoryClassName>
+              <queryBinding>xslt3</queryBinding>
+              <stylesheets>
+                <param>src/main/resources/content/transpile.xsl</param>
+              </stylesheets>
+              <locations>
+                <filesystemLocation>
+                  <location>src/test/bugs-and-features.xml</location>
+                </filesystemLocation>
               </locations>
             </execution>
           </executions>
