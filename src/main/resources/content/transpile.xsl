@@ -346,7 +346,9 @@ SOFTWARE.
       <alias:template match="root()" as="element(svrl:schematron-output)">
 
         <svrl:schematron-output>
-          <xsl:sequence select="@schemaVersion"/>
+          <xsl:call-template name="schxslt:copy-attributes">
+            <xsl:with-param name="attributes" as="attribute()*" select="(@schemaVersion)"/>
+          </xsl:call-template>
           <xsl:attribute name="phase" select="$phase"/>
           <xsl:for-each select="sch:ns">
             <svrl:ns-prefix-in-attribute-values prefix="{@prefix}" uri="{@uri}"/>
@@ -359,7 +361,9 @@ SOFTWARE.
               <xsl:variable name="groupId" as="xs:string" select="."/>
               <xsl:for-each select="map:get($patterns, $groupId)">
                 <svrl:active-pattern>
-                  <xsl:sequence select="@id"/>
+                  <xsl:call-template name="schxslt:copy-attributes">
+                    <xsl:with-param name="attributes" as="attribute()*" select="(@id)"/>
+                  </xsl:call-template>
                   <alias:attribute name="documents" select="{if (@documents) then @documents else 'document-uri(.)'}"/>
                 </svrl:active-pattern>
               </xsl:for-each>
@@ -417,10 +421,9 @@ SOFTWARE.
       <alias:choose>
         <alias:when test="'{generate-id(..)}' = $schxslt:pattern">
           <svrl:suppressed-rule>
-            <xsl:sequence select="@id"/>
-            <xsl:sequence select="@role"/>
-            <xsl:sequence select="@flag"/>
-            <xsl:sequence select="@context"/>
+            <xsl:call-template name="schxslt:copy-attributes">
+              <xsl:with-param name="attributes" as="attribute()*" select="(@id, @role, @flag, @context)"/>
+            </xsl:call-template>
             <alias:if test="document-uri()">
               <alias:attribute name="document" select="document-uri()"/>
             </alias:if>
@@ -431,10 +434,9 @@ SOFTWARE.
         </alias:when>
         <alias:otherwise>
           <svrl:fired-rule>
-            <xsl:sequence select="@id"/>
-            <xsl:sequence select="@role"/>
-            <xsl:sequence select="@flag"/>
-            <xsl:sequence select="@context"/>
+            <xsl:call-template name="schxslt:copy-attributes">
+              <xsl:with-param name="attributes" as="attribute()*" select="(@id, @role, @flag, @context)"/>
+            </xsl:call-template>
             <alias:if test="document-uri()">
               <alias:attribute name="document" select="document-uri()"/>
             </alias:if>
@@ -453,10 +455,12 @@ SOFTWARE.
   <xsl:template match="sch:schema/sch:let" as="element(xsl:param)" mode="schxslt:transpile">
     <alias:param name="{@name}">
       <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
-      <xsl:sequence select="@as"/>
+      <xsl:call-template name="schxslt:copy-attributes">
+        <xsl:with-param name="attributes" as="attribute()*" select="(@as)"/>
+      </xsl:call-template>
       <xsl:choose>
         <xsl:when test="@value">
-          <xsl:attribute name="select" select="@value"/>
+          <xsl:attribute name="select" select="schxslt:protect-curlies(@value)"/>
         </xsl:when>
         <xsl:otherwise>
           <xsl:if test="not(@as)">
@@ -471,10 +475,12 @@ SOFTWARE.
   <xsl:template match="sch:let" as="element(xsl:variable)" mode="schxslt:transpile">
     <alias:variable name="{@name}">
       <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
-      <xsl:sequence select="@as"/>
+      <xsl:call-template name="schxslt:copy-attributes">
+        <xsl:with-param name="attributes" as="attribute()*" select="(@as)"/>
+      </xsl:call-template>
       <xsl:choose>
         <xsl:when test="@value">
-          <xsl:attribute name="select" select="@value"/>
+          <xsl:attribute name="select" select="schxslt:protect-curlies(@value)"/>
         </xsl:when>
         <xsl:otherwise>
           <xsl:if test="not(@as)">
@@ -557,15 +563,15 @@ SOFTWARE.
   <xsl:template name="schxslt:report-diagnostics" as="element(svrl:diagnostic-reference)*">
     <xsl:variable name="diagnostics" as="xs:string*" select="tokenize(normalize-space(@diagnostics))"/>
     <xsl:for-each select="if (../../sch:diagnostics) then key('schxslt:diagnosticById', $diagnostics, ../..) else key('schxslt:diagnosticById', $diagnostics, ancestor::sch:schema)">
-      <svrl:diagnostic-reference diagnostic="{@id}">
+      <svrl:diagnostic-reference diagnostic="{schxslt:protect-curlies(@id)}">
         <svrl:text>
           <xsl:if test="schxslt:in-scope-language(.) ne schxslt:in-scope-language(ancestor::sch:schema)">
             <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
           </xsl:if>
           <xsl:sequence select="@xml:space"/>
-          <xsl:sequence select="@see"/>
-          <xsl:sequence select="@icon"/>
-          <xsl:sequence select="@fpi"/>
+          <xsl:call-template name="schxslt:copy-attributes">
+            <xsl:with-param name="attributes" as="attribute()*" select="(@see, @icon, @fpi)"/>
+          </xsl:call-template>
           <xsl:apply-templates select="node()" mode="schxslt:copy-message-content"/>
         </svrl:text>
       </svrl:diagnostic-reference>
@@ -575,17 +581,18 @@ SOFTWARE.
   <xsl:template name="schxslt:report-properties" as="element(svrl:property-reference)*">
     <xsl:variable name="properties" as="xs:string*" select="tokenize(normalize-space(@properties))"/>
     <xsl:for-each select="if (../../sch:properties) then key('schxslt:propertyById', $properties, ../..) else key('schxslt:propertyById', $properties, ancestor::sch:schema)">
-      <svrl:property-reference property="{@id}">
-        <xsl:sequence select="@role"/>
-        <xsl:sequence select="@scheme"/>
+      <svrl:property-reference property="{schxslt:protect-curlies(@id)}">
+        <xsl:call-template name="schxslt:copy-attributes">
+          <xsl:with-param name="attributes" as="attribute()*" select="(@role, @scheme)"/>
+        </xsl:call-template>
         <svrl:text>
           <xsl:if test="schxslt:in-scope-language(.) ne schxslt:in-scope-language(ancestor::sch:schema)">
             <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
           </xsl:if>
           <xsl:sequence select="@xml:space"/>
-          <xsl:sequence select="@see"/>
-          <xsl:sequence select="@icon"/>
-          <xsl:sequence select="@fpi"/>
+          <xsl:call-template name="schxslt:copy-attributes">
+            <xsl:with-param name="attributes" as="attribute()*" select="(@see, @icon, @fpi)"/>
+          </xsl:call-template>
           <xsl:apply-templates select="node()" mode="schxslt:copy-message-content"/>
         </svrl:text>
       </svrl:property-reference>
@@ -593,10 +600,9 @@ SOFTWARE.
   </xsl:template>
 
   <xsl:template name="schxslt:failed-assertion-content" as="node()+">
-    <xsl:sequence select="@flag"/>
-    <xsl:sequence select="@id"/>
-    <xsl:sequence select="@role"/>
-    <xsl:sequence select="@test"/>
+    <xsl:call-template name="schxslt:copy-attributes">
+      <xsl:with-param name="attributes" as="attribute()*" select="(@flag, @id, @role, @test)"/>
+    </xsl:call-template>
     <xsl:if test="schxslt:in-scope-language(.) ne schxslt:in-scope-language(ancestor::sch:schema)">
       <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
     </xsl:if>
