@@ -1,0 +1,27 @@
+<testcase xmlns="https://doi.org/10.5281/zenodo.5679629#" expect="invalid">
+  <label>The @flag attribute may contain attribute value templates</label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:pattern>
+        <sch:rule context="*" flag="{local-name()}">
+          <sch:assert test="false()" flag="{local-name()}" />
+        </sch:rule>
+      </sch:pattern>
+      <sch:pattern>
+        <sch:rule context="*">
+          <sch:report test="true()" flag="{local-name()}"/>
+        </sch:rule>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <avt-flag xmlns=""/>
+    </document>
+  </documents>
+  <assertions xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+    <assertion assert="//svrl:fired-rule[@flag = 'avt-flag']"/>
+    <assertion assert="//svrl:failed-assert[@flag = 'avt-flag']"/>
+    <assertion assert="//svrl:successful-report[@flag = 'avt-flag']"/>
+  </assertions>
+</testcase>

@@ -3,4 +3,6 @@
   <testcase href="bugs/svrl-curly-bracket-in-assert-test.xml"/>
   <testcase href="bugs/svrl-curly-bracket-in-report-test.xml"/>
   <testcase href="bugs/svrl-curly-bracket-in-rule-context.xml"/>
+  <testcase href="features/avt-in-role-attribute.xml"/>
+  <testcase href="features/avt-in-flag-attribute.xml"/>
 </testsuite>

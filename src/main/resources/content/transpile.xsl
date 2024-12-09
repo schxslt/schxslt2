@@ -88,6 +88,11 @@ SOFTWARE.
     -->
   </xsl:param>
 
+  <xsl:variable name="schxslt:avt-attributes" as="xs:QName*">
+    <xsl:sequence select="xs:QName('role')"/>
+    <xsl:sequence select="xs:QName('flag')"/>
+  </xsl:variable>
+
   <xsl:mode name="schxslt:expand" on-no-match="shallow-copy"/>
   <xsl:mode name="schxslt:include" on-no-match="shallow-copy"/>
   <xsl:mode name="schxslt:transpile" on-no-match="shallow-skip"/>
@@ -622,7 +627,7 @@ SOFTWARE.
   <xsl:template name="schxslt:copy-attributes" as="attribute()*">
     <xsl:param name="attributes" as="attribute()*" required="yes"/>
     <xsl:for-each select="$attributes">
-      <xsl:attribute name="{name()}" select="schxslt:protect-curlies(.)"/>
+      <xsl:attribute name="{name()}" select="if (node-name() = $schxslt:avt-attributes) then . else schxslt:protect-curlies(.)"/>
     </xsl:for-each>
   </xsl:template>
 

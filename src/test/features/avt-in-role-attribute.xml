@@ -1,0 +1,31 @@
+<testcase xmlns="https://doi.org/10.5281/zenodo.5679629#" expect="invalid">
+  <label>The @role attribute may contain attribute value templates</label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:pattern>
+        <sch:rule context="*" role="{local-name()}">
+          <sch:assert test="false()" role="{local-name()}" properties="p1"/>
+        </sch:rule>
+      </sch:pattern>
+      <sch:pattern>
+        <sch:rule context="*">
+          <sch:report test="true()" role="{local-name()}"/>
+        </sch:rule>
+      </sch:pattern>
+      <sch:properties>
+        <sch:property id="p1" role="{local-name()}"/>
+      </sch:properties>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <avt-role xmlns=""/>
+    </document>
+  </documents>
+  <assertions xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+    <assertion assert="//svrl:fired-rule[@role = 'avt-role']"/>
+    <assertion assert="//svrl:failed-assert[@role = 'avt-role']"/>
+    <assertion assert="//svrl:successful-report[@role = 'avt-role']"/>
+    <assertion assert="//svrl:property-reference[@role = 'avt-role']"/>
+  </assertions>
+</testcase>
