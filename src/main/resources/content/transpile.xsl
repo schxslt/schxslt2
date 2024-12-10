@@ -619,7 +619,7 @@ SOFTWARE.
 
   <xsl:template name="schxslt:copy-in-scope-namespaces" as="namespace-node()*">
     <xsl:variable name="context" as="element()" select="."/>
-    <xsl:for-each select="in-scope-prefixes($context)">
+    <xsl:for-each select="in-scope-prefixes($context)[.]">
       <xsl:namespace name="{.}" select="namespace-uri-for-prefix(., $context)"/>
     </xsl:for-each>
   </xsl:template>
