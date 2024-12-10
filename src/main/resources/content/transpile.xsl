@@ -76,14 +76,14 @@ SOFTWARE.
 
   <xsl:param name="schxslt:fail-early" as="xs:boolean" select="false()" static="yes">
     <!--
-        When set to boolean true, the validation stylesheets stops as soon as it encounters the first failed assertion
+        When set to boolean true, the validation stylesheet stops as soon as it encounters the first failed assertion
         or successful report. Defaults to false.
     -->
   </xsl:param>
 
   <xsl:param name="schxslt:terminate-validation-on-error" as="xs:boolean" select="true()" static="yes">
     <!--
-        When set to boolean true, the validation stylesheets terminates the XSLT processor when it encounters a dynamic
+        When set to boolean true, the validation stylesheet terminates the XSLT processor when it encounters a dynamic
         error. Defaults to true.
     -->
   </xsl:param>
