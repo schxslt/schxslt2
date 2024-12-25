@@ -22,7 +22,7 @@ Reporting Language) report.
 
 ### schxslt:debug as xs:boolean
 
-Enable or disable debugging. When debugging is enable, the validation stylesheet is indented. Defaults to false.
+Enable or disable debugging. When debugging is enabled, the validation stylesheet is indented. Defaults to false.
 
 ### schxslt:phase as xs:string?
 
@@ -44,17 +44,17 @@ report. Defaults to ```fn:path()``` when not set.
 
 ### schxslt:expand-text as xs:boolean
 
-When set to boolean ```true```, the validation stylesheet globally enables text value templates and you may use them in
+When set to boolean ```true```, the validation stylesheet globally enables text value templates, and you may use them in
 assertion or diagnostic messages. Defaults to ```false```.
 
 ### schxslt:fail-early as xs:boolean
 
-When set to boolean ```true```, the validation stylesheets stops as soon as it encounters the first failed assertion or
+When set to boolean ```true```, the validation stylesheet stops as soon as it encounters the first failed assertion or
 successful report. Defaults to ```false```.
 
 ### schxslt:terminate-validation-on-error as xs:boolean
 
-When set to boolean ```true```, the validation stylesheets terminates the XSLT processor when it encounters a dynamic
+When set to boolean ```true```, the validation stylesheet terminates the XSLT processor when it encounters a dynamic
 error. Defaults to ```true```.
 
 ## Enhancements
@@ -72,7 +72,7 @@ This proposal adds support for an ```@as``` attribute on variable declarations.
 
 [Proposal 3](https://github.com/Schematron/schematron-enhancement-proposals/issues/3)
 
-The Schematron specification limits the the reuse of abstract rules to the current pattern element. The ```@href
+The Schematron specification limits the reuse of abstract rules to the current pattern element. The ```@href
 attribute``` on ```extends``` was introduced in 2016 to overcome this limitation but requires a schema author to
 externalize abstract rules for them to be used.
 
@@ -85,7 +85,7 @@ referable by the ```@rule``` attribute of ```extends```.
 
 The Schematron specification allows the XSLT elements ```function``` and ```key``` to be used in a Schematron
 schema. This makes sense because both are required to set up the query language environment. The ```key``` element
-prepares data structures for the ```key()``` function and the ```function``` element allows the use of user defined
+prepares data structures for the ```key()``` function and the ```function``` element allows the use of user-defined
 functions.
 
 This proposal adds support for the following XSLT elements:
@@ -122,7 +122,7 @@ Expressions in the validation stylesheet can access the effective phase it was c
 ### Logging dynamic errors
 
 Dynamic errors during validation are logged by a svrl:error element (see [Proposal
-69](https://github.com/Schematron/schematron-enhancement-proposals/issues/69). 
+69](https://github.com/Schematron/schematron-enhancement-proposals/issues/69)). 
 
 Unless the static parameter ```schxslt:terminate-validation-on-error``` is set to ```false``` the validation stylesheet still
 terminates the XSLT processor.
