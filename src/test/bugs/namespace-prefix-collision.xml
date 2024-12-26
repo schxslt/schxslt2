@@ -2,6 +2,9 @@
   <label>A schema document should be free to declare arbitrary namespace prefixes</label>
   <schemas>
     <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" xmlns:err="http://example.com/ns/err">
+      <sch:ns uri="http://example.com/ns/xs" prefix="xs"/>
+      <sch:ns uri="http://example.com/ns/xsl" prefix="xsl"/>
+      <sch:ns uri="http://example.com/ns/xsl" prefix="schxslt"/>
       <sch:pattern>
         <sch:rule context="*">
           <sch:report test="exists(@attribute)"/>

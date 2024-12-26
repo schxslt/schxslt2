@@ -21,373 +21,375 @@ ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
-<xsl:transform version="3.0" expand-text="yes" exclude-result-prefixes="schxslt xs"
+<transform version="3.0" expand-text="yes" exclude-result-prefixes="#all" xpath-default-namespace="http://www.w3.org/1999/XSL/Transform"
                xmlns:alias="http://www.w3.org/1999/XSL/TransformAlias"
                xmlns:schxslt="http://dmaus.name/ns/2023/schxslt"
                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
                xmlns:svrl="http://purl.oclc.org/dsdl/svrl"
                xmlns:xs="http://www.w3.org/2001/XMLSchema"
-               xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+               xmlns="http://www.w3.org/1999/XSL/Transform">
 
-  <xsl:namespace-alias result-prefix="xsl" stylesheet-prefix="alias"/>
+  <namespace-alias result-prefix="#default" stylesheet-prefix="alias"/>
 
-  <xsl:param name="schxslt:debug" static="yes" select="false()">
+  <param name="schxslt:debug" static="yes" select="false()">
     <!--
         Enable or disable debugging. When debugging is enable, the validation stylesheet is indented. Defaults to false.
     -->
-  </xsl:param>
+  </param>
 
-  <xsl:output indent="yes" use-when="$schxslt:debug"/>
+  <output indent="yes" use-when="$schxslt:debug"/>
 
-  <xsl:variable name="schxslt:version" as="xs:string"
+  <variable name="schxslt:version" as="xs:string"
                 select="if (starts-with('${project.version}', '$')) then 'development' else '${project.version}'"/>
 
-  <xsl:param name="schxslt:phase" as="xs:string" select="'#DEFAULT'">
+  <param name="schxslt:phase" as="xs:string" select="'#DEFAULT'">
     <!--
         Name of the validation phase. The value '#DEFAULT' selects the pattern in the sch:schema/@defaultPhase attribute
         or '#ALL' if this attribute is not present. The value '#ALL' selects all patterns. Defaults to '#DEFAULT'.
     -->
-  </xsl:param>
+  </param>
 
-  <xsl:param name="schxslt:expand-text" as="xs:boolean" select="false()">
+  <param name="schxslt:expand-text" as="xs:boolean" select="false()">
     <!--
         When set to boolean true, the validation stylesheet globally enables text value templates and you may use them
         in assertion or diagnostic messages. Defaults to false.
     -->
-  </xsl:param>
+  </param>
 
-  <xsl:param name="schxslt:streamable" as="xs:boolean" select="false()" static="yes">
+  <param name="schxslt:streamable" as="xs:boolean" select="false()" static="yes">
     <!--
         Set to boolean true to create a streamable validation stylesheet. This *does not* check the streamability of
         XPath expressions in rules, assertions, variables etc. It merely declares the modes in the validation stylesheet
         to be streamable and removes the @location attribute from the SVRL output when no location function is given
         because the default fn:path() is not streamable. Defaults to false.
     -->
-  </xsl:param>
+  </param>
 
-  <xsl:param name="schxslt:location-function" as="xs:string?" select="()" static="yes">
+  <param name="schxslt:location-function" as="xs:string?" select="()" static="yes">
     <!--
         Name of a function f($context as node()) as xs:string that provides location information for the SVRL
         report. Defaults to fn:path() when not set.
     -->
-  </xsl:param>
+  </param>
 
-  <xsl:param name="schxslt:fail-early" as="xs:boolean" select="false()" static="yes">
+  <param name="schxslt:fail-early" as="xs:boolean" select="false()" static="yes">
     <!--
         When set to boolean true, the validation stylesheet stops as soon as it encounters the first failed assertion
         or successful report. Defaults to false.
     -->
-  </xsl:param>
+  </param>
 
-  <xsl:param name="schxslt:terminate-validation-on-error" as="xs:boolean" select="true()" static="yes">
+  <param name="schxslt:terminate-validation-on-error" as="xs:boolean" select="true()" static="yes">
     <!--
         When set to boolean true, the validation stylesheet terminates the XSLT processor when it encounters a dynamic
         error. Defaults to true.
     -->
-  </xsl:param>
+  </param>
 
-  <xsl:variable name="schxslt:avt-attributes" as="xs:QName*">
-    <xsl:sequence select="xs:QName('role')"/>
-    <xsl:sequence select="xs:QName('flag')"/>
-  </xsl:variable>
+  <variable name="schxslt:avt-attributes" as="xs:QName*">
+    <sequence select="QName('', 'role')"/>
+    <sequence select="QName('','flag')"/>
+  </variable>
 
-  <xsl:mode name="schxslt:expand" on-no-match="shallow-copy"/>
-  <xsl:mode name="schxslt:include" on-no-match="shallow-copy"/>
-  <xsl:mode name="schxslt:transpile" on-no-match="shallow-skip"/>
+  <mode name="schxslt:expand" on-no-match="shallow-copy"/>
+  <mode name="schxslt:include" on-no-match="shallow-copy"/>
+  <mode name="schxslt:transpile" on-no-match="shallow-skip"/>
 
-  <xsl:mode on-no-match="shallow-skip"/>
-  <xsl:mode name="schxslt:copy-verbatim" on-no-match="shallow-copy"/>
-  <xsl:mode name="schxslt:copy-message-content" on-no-match="shallow-copy"/>
+  <mode on-no-match="shallow-skip"/>
+  <mode name="schxslt:copy-verbatim" on-no-match="shallow-copy"/>
+  <mode name="schxslt:copy-message-content" on-no-match="shallow-copy"/>
 
-  <xsl:key name="schxslt:patternByPhaseId" match="sch:pattern" use="../sch:phase[sch:active/@pattern = current()/@id]/@id"/>
-  <xsl:key name="schxslt:patternByPhaseId" match="sch:pattern" use="'#ALL'"/>
-  <xsl:key name="schxslt:phaseByPatternId" match="sch:phase" use="sch:active/@pattern"/>
-  <xsl:key name="schxslt:diagnosticById" match="sch:diagnostic" use="@id"/>
-  <xsl:key name="schxslt:propertyById" match="sch:property" use="@id"/>
+  <key name="schxslt:patternByPhaseId" match="sch:pattern" use="../sch:phase[sch:active/@pattern = current()/@id]/@id"/>
+  <key name="schxslt:patternByPhaseId" match="sch:pattern" use="'#ALL'"/>
+  <key name="schxslt:phaseByPatternId" match="sch:phase" use="sch:active/@pattern"/>
+  <key name="schxslt:diagnosticById" match="sch:diagnostic" use="@id"/>
+  <key name="schxslt:propertyById" match="sch:property" use="@id"/>
 
-  <xsl:template match="sch:schema" as="element(xsl:stylesheet)">
+  <template match="sch:schema" as="element(Q{http://www.w3.org/1999/XSL/Transform}stylesheet)">
 
-    <xsl:variable name="schema" as="document-node(element(sch:schema))">
-      <xsl:document>
-        <xsl:call-template name="schxslt:perform-expand">
-          <xsl:with-param name="schema" as="document-node(element(sch:schema))">
-            <xsl:document>
-              <xsl:call-template name="schxslt:perform-include">
-                <xsl:with-param name="schema" as="element(sch:schema)" select="."/>
-              </xsl:call-template>
-            </xsl:document>
-          </xsl:with-param>
-        </xsl:call-template>
-      </xsl:document>
-    </xsl:variable>
+    <variable name="schema" as="document-node(element(sch:schema))">
+      <document>
+        <call-template name="schxslt:perform-expand">
+          <with-param name="schema" as="document-node(element(sch:schema))">
+            <document>
+              <call-template name="schxslt:perform-include">
+                <with-param name="schema" as="element(sch:schema)" select="."/>
+              </call-template>
+            </document>
+          </with-param>
+        </call-template>
+      </document>
+    </variable>
 
-    <xsl:apply-templates select="$schema" mode="schxslt:transpile"/>
+    <apply-templates select="$schema" mode="schxslt:transpile"/>
 
-  </xsl:template>
+  </template>
 
-  <xsl:template name="schxslt:perform-include" as="element(sch:schema)">
-    <xsl:param name="schema" as="element(sch:schema)" required="yes"/>
-    <xsl:apply-templates select="$schema" mode="schxslt:include"/>
-  </xsl:template>
+  <template name="schxslt:perform-include" as="element(sch:schema)">
+    <param name="schema" as="element(sch:schema)" required="yes"/>
+    <apply-templates select="$schema" mode="schxslt:include"/>
+  </template>
 
-  <xsl:template name="schxslt:perform-expand" as="document-node(element(sch:schema))">
-    <xsl:param name="schema" as="document-node(element(sch:schema))" required="yes"/>
-    <xsl:apply-templates select="$schema" mode="schxslt:expand"/>
-  </xsl:template>
+  <template name="schxslt:perform-expand" as="document-node(element(sch:schema))">
+    <param name="schema" as="document-node(element(sch:schema))" required="yes"/>
+    <apply-templates select="$schema" mode="schxslt:expand"/>
+  </template>
 
   <!-- Step 1: Include -->
-  <xsl:template match="sch:include" as="element()" mode="schxslt:include">
-    <xsl:variable name="external" as="element()" select="if (document(@href) instance of document-node()) then document(@href)/*[1] else document(@href)"/>
-    <xsl:apply-templates select="$external" mode="#current">
-      <xsl:with-param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
-      <xsl:with-param name="targetNamespaces" as="element(sch:ns)*" select="$external/ancestor::sch:schema/sch:ns"/>
-    </xsl:apply-templates>
-  </xsl:template>
+  <template match="sch:include" as="element()" mode="schxslt:include">
+    <variable name="external" as="element()" select="if (document(@href) instance of document-node()) then document(@href)/*[1] else document(@href)"/>
+    <apply-templates select="$external" mode="#current">
+      <with-param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
+      <with-param name="targetNamespaces" as="element(sch:ns)*" select="$external/ancestor::sch:schema/sch:ns"/>
+    </apply-templates>
+  </template>
 
-  <xsl:template match="sch:rule/sch:extends[@href]" as="node()*" mode="schxslt:include">
-    <xsl:variable name="external" as="element()" select="if (document(@href) instance of document-node()) then document(@href)/*[1] else document(@href)"/>
-    <xsl:if test="(namespace-uri($external) ne 'http://purl.oclc.org/dsdl/schematron') or (local-name($external) ne 'rule')">
-      <xsl:variable name="message" as="xs:string+">
+  <template match="sch:rule/sch:extends[@href]" as="node()*" mode="schxslt:include">
+    <variable name="external" as="element()" select="if (document(@href) instance of document-node()) then document(@href)/*[1] else document(@href)"/>
+    <if test="(namespace-uri($external) ne 'http://purl.oclc.org/dsdl/schematron') or (local-name($external) ne 'rule')">
+      <variable name="message" as="xs:string+">
         The @href attribute of an &lt;extends&gt; element must be an IRI reference to an external well-formed XML
         document or to an element in an external well-formed XML document that is a Schematron &lt;rule&gt;
         element. This @href points to a Q{{{namespace-uri($external)}}}{local-name($external)} element.
-      </xsl:variable>
-      <xsl:message terminate="yes">
-        <xsl:text/>
-        <xsl:value-of select="normalize-space(string-join($message))"/>
-      </xsl:message>
-    </xsl:if>
-    <xsl:apply-templates select="$external/node()" mode="#current">
-      <xsl:with-param name="sourceLanguage" select="schxslt:in-scope-language(.)"/>
-      <xsl:with-param name="targetNamespaces" as="element(sch:ns)*" select="$external/../../sch:ns"/>
-    </xsl:apply-templates>
-  </xsl:template>
+      </variable>
+      <message terminate="yes">
+        <text/>
+        <value-of select="normalize-space(string-join($message))"/>
+      </message>
+    </if>
+    <apply-templates select="$external/node()" mode="#current">
+      <with-param name="sourceLanguage" select="schxslt:in-scope-language(.)"/>
+      <with-param name="targetNamespaces" as="element(sch:ns)*" select="$external/../../sch:ns"/>
+    </apply-templates>
+  </template>
 
-  <xsl:template match="*" mode="schxslt:include schxslt:expand">
-    <xsl:param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
-    <xsl:param name="targetNamespaces" as="element(sch:ns)*"/>
-    <xsl:variable name="inScopeLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
+  <template match="*" mode="schxslt:include schxslt:expand">
+    <param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
+    <param name="targetNamespaces" as="element(sch:ns)*"/>
+    <variable name="inScopeLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
 
-    <xsl:copy>
-      <xsl:for-each select="$targetNamespaces">
-        <xsl:namespace name="{@prefix}" select="@uri"/>
-      </xsl:for-each>
-      <xsl:apply-templates select="@*" mode="#current"/>
-      <xsl:if test="not(@xml:lang) and not($inScopeLanguage eq $sourceLanguage)">
-        <xsl:attribute name="xml:lang" select="$inScopeLanguage"/>
-      </xsl:if>
-      <xsl:apply-templates select="node()" mode="#current"/>
-    </xsl:copy>
-  </xsl:template>
+    <copy>
+      <for-each select="$targetNamespaces">
+        <namespace name="{@prefix}" select="@uri"/>
+      </for-each>
+      <apply-templates select="@*" mode="#current"/>
+      <if test="not(@xml:lang) and not($inScopeLanguage eq $sourceLanguage)">
+        <attribute name="xml:lang" select="$inScopeLanguage"/>
+      </if>
+      <apply-templates select="node()" mode="#current"/>
+    </copy>
+  </template>
 
   <!-- Step 2: Expand -->
-  <xsl:template match="sch:rule[@abstract = 'true'] | sch:pattern[@abstract = 'true']" as="empty-sequence()" mode="schxslt:expand"/>
+  <template match="sch:rule[@abstract = 'true'] | sch:pattern[@abstract = 'true']" as="empty-sequence()" mode="schxslt:expand"/>
 
-  <xsl:template match="sch:rule/sch:extends[@rule]" as="node()*" mode="schxslt:expand">
-    <xsl:variable name="abstract-rule" as="element(sch:rule)*"
+  <template match="sch:rule/sch:extends[@rule]" as="node()*" mode="schxslt:expand">
+    <variable name="abstract-rule" as="element(sch:rule)*"
                   select="(../../sch:rule, ../../../sch:rules/sch:rule)[@abstract = 'true'][@id = current()/@rule]"/>
-    <xsl:if test="empty($abstract-rule)">
-      <xsl:variable name="message" as="xs:string+">
+    <if test="empty($abstract-rule)">
+      <variable name="message" as="xs:string+">
         The current pattern or schema defines no abstract rule named '{@rule}'.
-      </xsl:variable>
-      <xsl:message terminate="yes">
-        <xsl:text/>
-        <xsl:value-of select="normalize-space(string-join($message))"/>
-      </xsl:message>
-    </xsl:if>
-    <xsl:apply-templates select="$abstract-rule/node()" mode="#current">
-      <xsl:with-param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
-    </xsl:apply-templates>
-  </xsl:template>
+      </variable>
+      <message terminate="yes">
+        <text/>
+        <value-of select="normalize-space(string-join($message))"/>
+      </message>
+    </if>
+    <apply-templates select="$abstract-rule/node()" mode="#current">
+      <with-param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
+    </apply-templates>
+  </template>
 
-  <xsl:template match="sch:pattern[@is-a]" as="element(sch:pattern)" mode="schxslt:expand">
-    <xsl:variable name="is-a" as="element(sch:pattern)?" select="../sch:pattern[@abstract = 'true'][@id = current()/@is-a]"/>
-    <xsl:if test="empty($is-a)">
-      <xsl:variable name="message" as="xs:string+">
+  <template match="sch:pattern[@is-a]" as="element(sch:pattern)" mode="schxslt:expand">
+    <variable name="is-a" as="element(sch:pattern)?" select="../sch:pattern[@abstract = 'true'][@id = current()/@is-a]"/>
+    <if test="empty($is-a)">
+      <variable name="message" as="xs:string+">
         The current schema does not define an abstract pattern with an id of '{@is-a}'.
-      </xsl:variable>
-      <xsl:message terminate="yes">
-        <xsl:text/>
-        <xsl:value-of select="normalize-space(string-join($message))"/>
-      </xsl:message>
-    </xsl:if>
+      </variable>
+      <message terminate="yes">
+        <text/>
+        <value-of select="normalize-space(string-join($message))"/>
+      </message>
+    </if>
 
     <!-- Check if all declared parameters are supplied -->
-    <xsl:variable name="params-supplied" as="element(sch:param)*" select="sch:param"/>
-    <xsl:variable name="params-declared" as="element(sch:param)*" select="$is-a/sch:param"/>
-    <xsl:if test="exists($params-declared[empty(@value)][not(@name = $params-supplied/@name)])">
-      <xsl:variable name="message" as="xs:string+">
+    <variable name="params-supplied" as="element(sch:param)*" select="sch:param"/>
+    <variable name="params-declared" as="element(sch:param)*" select="$is-a/sch:param"/>
+    <if test="exists($params-declared[empty(@value)][not(@name = $params-supplied/@name)])">
+      <variable name="message" as="xs:string+">
         Some abstract pattern parameters of '{@is-a}' are declared but not supplied: {$params-declared[not(@name = $params-supplied/@name)]/@name}.
-      </xsl:variable>
-      <xsl:message terminate="yes">
-        <xsl:text/>
-        <xsl:value-of select="normalize-space(string-join($message))"/>
-      </xsl:message>
-    </xsl:if>
+      </variable>
+      <message terminate="yes">
+        <text/>
+        <value-of select="normalize-space(string-join($message))"/>
+      </message>
+    </if>
     <!-- Check if all supplied parameters are declared -->
-    <xsl:if test="exists($params-declared) and exists($params-supplied[not(@name = $params-declared/@name)])">
-      <xsl:variable name="message" as="xs:string+">
+    <if test="exists($params-declared) and exists($params-supplied[not(@name = $params-declared/@name)])">
+      <variable name="message" as="xs:string+">
         Some abstract pattern parameters of '{@is-a}' are supplied but not declared: {$params-supplied[not(@name = $params-declared/@name)]/@name}.
-      </xsl:variable>
-      <xsl:message terminate="yes">
-        <xsl:text/>
-        <xsl:value-of select="normalize-space(string-join($message))"/>
-      </xsl:message>
-    </xsl:if>
+      </variable>
+      <message terminate="yes">
+        <text/>
+        <value-of select="normalize-space(string-join($message))"/>
+      </message>
+    </if>
 
-    <xsl:variable name="instance" as="document-node()">
+    <variable name="instance" as="document-node()">
       <!-- In order to make use of fn:key() in the transpilation stage
            we need to root the preprocessed schema. -->
-      <xsl:document>
-        <xsl:apply-templates select="$is-a/node()" mode="#current">
-          <xsl:with-param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
-          <xsl:with-param name="params" as="element(sch:param)*" select="($params-supplied, $params-declared[not(@name = $params-supplied/@name)][@value])" tunnel="yes"/>
-        </xsl:apply-templates>
-      </xsl:document>
-    </xsl:variable>
+      <document>
+        <apply-templates select="$is-a/node()" mode="#current">
+          <with-param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
+          <with-param name="params" as="element(sch:param)*" select="($params-supplied, $params-declared[not(@name = $params-supplied/@name)][@value])" tunnel="yes"/>
+        </apply-templates>
+      </document>
+    </variable>
 
-    <xsl:variable name="diagnostics" as="xs:string*" select="tokenize(string-join($instance/sch:rule/sch:*/@diagnostics, ' '))"/>
-    <xsl:variable name="properties" as="xs:string*" select="tokenize(string-join($instance/sch:rule/sch:*/@properties, ' '))"/>
+    <variable name="diagnostics" as="xs:string*" select="tokenize(string-join($instance/sch:rule/sch:*/@diagnostics, ' '))"/>
+    <variable name="properties" as="xs:string*" select="tokenize(string-join($instance/sch:rule/sch:*/@properties, ' '))"/>
 
-    <xsl:copy>
-      <xsl:apply-templates select="@*" mode="#current">
-        <xsl:with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
-      </xsl:apply-templates>
-      <xsl:if test="empty(@documents)">
-        <xsl:apply-templates select="$is-a/@documents" mode="#current">
-          <xsl:with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
-        </xsl:apply-templates>
-      </xsl:if>
-      <xsl:if test="empty(@xml:lang) and (schxslt:in-scope-language(.) ne schxslt:in-scope-language($is-a))">
-        <xsl:attribute name="xml:lang" select="schxslt:in-scope-language($is-a)"/>
-      </xsl:if>
-      <xsl:sequence select="$instance"/>
-      <xsl:apply-templates select="node()" mode="#current"/>
+    <copy>
+      <apply-templates select="@*" mode="#current">
+        <with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
+      </apply-templates>
+      <if test="empty(@documents)">
+        <apply-templates select="$is-a/@documents" mode="#current">
+          <with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
+        </apply-templates>
+      </if>
+      <if test="empty(@xml:lang) and (schxslt:in-scope-language(.) ne schxslt:in-scope-language($is-a))">
+        <attribute name="xml:lang" select="schxslt:in-scope-language($is-a)"/>
+      </if>
+      <sequence select="$instance"/>
+      <apply-templates select="node()" mode="#current"/>
 
-      <xsl:if test="exists($diagnostics)">
-        <xsl:element name="diagnostics" namespace="http://purl.oclc.org/dsdl/schematron">
-          <xsl:apply-templates select="key('schxslt:diagnosticById', $diagnostics)" mode="#current">
-            <xsl:with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
-          </xsl:apply-templates>
-        </xsl:element>
-      </xsl:if>
-      <xsl:if test="exists($properties)">
-        <xsl:element name="properties" namespace="http://purl.oclc.org/dsdl/schematron">
-          <xsl:apply-templates select="key('schxslt:propertyById', $properties)" mode="#current">
-            <xsl:with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
-          </xsl:apply-templates>
-        </xsl:element>
-      </xsl:if>
+      <if test="exists($diagnostics)">
+        <element name="diagnostics" namespace="http://purl.oclc.org/dsdl/schematron">
+          <apply-templates select="key('schxslt:diagnosticById', $diagnostics)" mode="#current">
+            <with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
+          </apply-templates>
+        </element>
+      </if>
+      <if test="exists($properties)">
+        <element name="properties" namespace="http://purl.oclc.org/dsdl/schematron">
+          <apply-templates select="key('schxslt:propertyById', $properties)" mode="#current">
+            <with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
+          </apply-templates>
+        </element>
+      </if>
 
-    </xsl:copy>
+    </copy>
 
-  </xsl:template>
+  </template>
 
-  <xsl:template match="sch:assert/@test | sch:report/@test | sch:rule/@context | sch:value-of/@select | sch:pattern/@documents | sch:name/@path | sch:let/@value | xsl:copy-of[ancestor::sch:property]/@select" mode="schxslt:expand">
-    <xsl:param name="params" as="element(sch:param)*" tunnel="yes"/>
-    <xsl:attribute name="{name()}" select="schxslt:replace-params(., $params)"/>
-  </xsl:template>
+  <template match="sch:assert/@test | sch:report/@test | sch:rule/@context | sch:value-of/@select | sch:pattern/@documents | sch:name/@path | sch:let/@value | Q{http://www.w3.org/1999/XSL/Transform}copy-of[ancestor::sch:property]/@select" mode="schxslt:expand">
+    <param name="params" as="element(sch:param)*" tunnel="yes"/>
+    <attribute name="{name()}" select="schxslt:replace-params(., $params)"/>
+  </template>
 
-  <xsl:function name="schxslt:replace-params" as="xs:string?">
-    <xsl:param name="src" as="xs:string"/>
-    <xsl:param name="params" as="element(sch:param)*"/>
-    <xsl:choose>
-      <xsl:when test="empty($params)">
-        <xsl:value-of select="$src"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:variable name="paramsSorted" as="element(sch:param)*">
-          <xsl:for-each select="$params">
-            <xsl:sort select="string-length(@name)" order="descending"/>
-            <xsl:sequence select="."/>
-          </xsl:for-each>
-        </xsl:variable>
+  <function name="schxslt:replace-params" as="xs:string?">
+    <param name="src" as="xs:string"/>
+    <param name="params" as="element(sch:param)*"/>
+    <choose>
+      <when test="empty($params)">
+        <value-of select="$src"/>
+      </when>
+      <otherwise>
+        <variable name="paramsSorted" as="element(sch:param)*">
+          <for-each select="$params">
+            <sort select="string-length(@name)" order="descending"/>
+            <sequence select="."/>
+          </for-each>
+        </variable>
 
-        <xsl:variable name="value" select="replace(replace($paramsSorted[1]/@value, '\\', '\\\\'), '\$', '\\\$')"/>
-        <xsl:variable name="src" select="replace($src, concat('(\W*)\$', $paramsSorted[1]/@name, '(\W*)'), concat('$1', $value, '$2'))"/>
-        <xsl:value-of select="schxslt:replace-params($src, $paramsSorted[position() > 1])"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:function>
+        <variable name="value" select="replace(replace($paramsSorted[1]/@value, '\\', '\\\\'), '\$', '\\\$')"/>
+        <variable name="src" select="replace($src, concat('(\W*)\$', $paramsSorted[1]/@name, '(\W*)'), concat('$1', $value, '$2'))"/>
+        <value-of select="schxslt:replace-params($src, $paramsSorted[position() > 1])"/>
+      </otherwise>
+    </choose>
+  </function>
 
   <!-- Step 3: Transpile -->
-  <xsl:template match="sch:schema" as="element(xsl:stylesheet)" mode="schxslt:transpile">
+  <template match="sch:schema" as="element(Q{http://www.w3.org/1999/XSL/Transform}stylesheet)" mode="schxslt:transpile">
 
-    <xsl:variable name="phase" as="xs:string" select="if ($schxslt:phase = ('#DEFAULT', '')) then (@defaultPhase, '#ALL')[1] else $schxslt:phase"/>
-    <xsl:variable name="patterns" as="map(xs:string, element(sch:pattern)+)">
-      <xsl:map>
-        <xsl:for-each-group select="key('schxslt:patternByPhaseId', $phase)" group-by="string(@documents)">
-          <xsl:map-entry key="concat('group.', generate-id(current-group()[1]))" select="current-group()"/>
-        </xsl:for-each-group>
-      </xsl:map>
-    </xsl:variable>
+    <variable name="phase" as="xs:string" select="if ($schxslt:phase = ('#DEFAULT', '')) then (@defaultPhase, '#ALL')[1] else $schxslt:phase"/>
+    <variable name="patterns" as="map(xs:string, element(sch:pattern)+)">
+      <map>
+        <for-each-group select="key('schxslt:patternByPhaseId', $phase)" group-by="string(@documents)">
+          <map-entry key="concat('group.', generate-id(current-group()[1]))" select="current-group()"/>
+        </for-each-group>
+      </map>
+    </variable>
 
     <alias:stylesheet version="3.0" expand-text="{$schxslt:expand-text}">
-      <xsl:for-each select="sch:ns">
-        <xsl:namespace name="{@prefix}" select="@uri"/>
-      </xsl:for-each>
+      <for-each select="sch:ns">
+        <namespace name="{@prefix}" select="@uri"/>
+      </for-each>
 
       <alias:variable name="Q{{http://dmaus.name/ns/2023/schxslt}}phase" as="Q{{http://www.w3.org/2001/XMLSchema}}string" select="'{$phase}'"/>
 
-      <xsl:apply-templates select="sch:let" mode="#current"/>
-      <xsl:apply-templates select="sch:phase[@id = $phase]/sch:let" mode="#current"/>
+      <apply-templates select="sch:let" mode="#current"/>
+      <apply-templates select="sch:phase[@id = $phase]/sch:let" mode="#current"/>
 
-      <xsl:sequence select="xsl:accumulator | xsl:function | xsl:include | xsl:import | xsl:import-schema | xsl:key | xsl:use-package"/>
+      <sequence select="Q{http://www.w3.org/1999/XSL/Transform}accumulator | Q{http://www.w3.org/1999/XSL/Transform}function | Q{http://www.w3.org/1999/XSL/Transform}include | Q{http://www.w3.org/1999/XSL/Transform}import | Q{http://www.w3.org/1999/XSL/Transform}import-schema | Q{http://www.w3.org/1999/XSL/Transform}key | Q{http://www.w3.org/1999/XSL/Transform}use-package"/>
 
-      <xsl:for-each select="Q{http://www.w3.org/2005/xpath-functions/map}keys($patterns)">
+      <for-each select="Q{http://www.w3.org/2005/xpath-functions/map}keys($patterns)">
         <alias:mode name="{.}" on-no-match="shallow-skip" streamable="{$schxslt:streamable}"/>
         <alias:template match="*" mode="{.}" priority="-10">
           <alias:apply-templates select="@*" mode="#current"/>
           <alias:apply-templates select="node()" mode="#current"/>
         </alias:template>
-        <xsl:apply-templates select="Q{http://www.w3.org/2005/xpath-functions/map}get($patterns, .)/sch:let" mode="#current"/>
-        <xsl:apply-templates select="Q{http://www.w3.org/2005/xpath-functions/map}get($patterns, .)/sch:rule" mode="#current">
-          <xsl:with-param name="mode" as="xs:string" select="."/>
-        </xsl:apply-templates>
-      </xsl:for-each>
+        <apply-templates select="Q{http://www.w3.org/2005/xpath-functions/map}get($patterns, .)/sch:let" mode="#current"/>
+        <apply-templates select="Q{http://www.w3.org/2005/xpath-functions/map}get($patterns, .)/sch:rule" mode="#current">
+          <with-param name="mode" as="xs:string" select="."/>
+        </apply-templates>
+      </for-each>
 
       <alias:template match="root()" as="element(svrl:schematron-output)">
 
         <svrl:schematron-output>
-          <xsl:call-template name="schxslt:copy-attributes">
-            <xsl:with-param name="attributes" as="attribute()*" select="(@schemaVersion)"/>
-          </xsl:call-template>
-          <xsl:attribute name="phase" select="$phase"/>
-          <xsl:for-each select="sch:ns">
+          <call-template name="schxslt:copy-attributes">
+            <with-param name="attributes" as="attribute()*" select="(@schemaVersion)"/>
+          </call-template>
+          <attribute name="phase" select="$phase"/>
+          <for-each select="sch:ns">
             <svrl:ns-prefix-in-attribute-values prefix="{@prefix}" uri="{@uri}"/>
-          </xsl:for-each>
+          </for-each>
 
-          <xsl:comment>SchXslt2 Core {$schxslt:version}</xsl:comment>
+          <comment>SchXslt2 Core {$schxslt:version}</comment>
 
           <alias:try>
-            <xsl:for-each select="Q{http://www.w3.org/2005/xpath-functions/map}keys($patterns)">
-              <xsl:variable name="groupId" as="xs:string" select="."/>
-              <xsl:for-each select="Q{http://www.w3.org/2005/xpath-functions/map}get($patterns, $groupId)">
+            <for-each select="Q{http://www.w3.org/2005/xpath-functions/map}keys($patterns)">
+              <variable name="groupId" as="xs:string" select="."/>
+              <for-each select="Q{http://www.w3.org/2005/xpath-functions/map}get($patterns, $groupId)">
                 <svrl:active-pattern>
-                  <xsl:call-template name="schxslt:copy-attributes">
-                    <xsl:with-param name="attributes" as="attribute()*" select="(@id)"/>
-                  </xsl:call-template>
+                  <call-template name="schxslt:copy-attributes">
+                    <with-param name="attributes" as="attribute()*" select="(@id)"/>
+                  </call-template>
                   <alias:attribute name="documents" select="{if (@documents) then @documents else 'document-uri(.)'}"/>
                 </svrl:active-pattern>
-              </xsl:for-each>
+              </for-each>
 
-              <xsl:choose>
-                <xsl:when test="Q{http://www.w3.org/2005/xpath-functions/map}get($patterns, $groupId)[1]/@documents">
+              <choose>
+                <when test="Q{http://www.w3.org/2005/xpath-functions/map}get($patterns, $groupId)[1]/@documents">
                   <alias:for-each select="{Q{http://www.w3.org/2005/xpath-functions/map}get($patterns, $groupId)[1]/@documents}">
                     <alias:source-document href="{{.}}">
                       <alias:apply-templates select="." mode="{$groupId}"/>
                     </alias:source-document>
                   </alias:for-each>
-                </xsl:when>
-                <xsl:otherwise>
+                </when>
+                <otherwise>
                   <alias:apply-templates select="." mode="{$groupId}"/>
-                </xsl:otherwise>
-              </xsl:choose>
+                </otherwise>
+              </choose>
 
-            </xsl:for-each>
-            <alias:catch errors="Q{{http://dmaus.name/ns/2023/schxslt}}CatchFailEarly" xsl:use-when="$schxslt:fail-early">
-              <alias:sequence select="$Q{{http://www.w3.org/2005/xqt-errors}}value"/>
-            </alias:catch>
+            </for-each>
+            <if test="$schxslt:fail-early">
+              <alias:catch errors="Q{{http://dmaus.name/ns/2023/schxslt}}CatchFailEarly">
+                <alias:sequence select="$Q{{http://www.w3.org/2005/xqt-errors}}value"/>
+              </alias:catch>
+            </if>
             <alias:catch>
               <svrl:error code="{{$Q{{http://www.w3.org/2005/xqt-errors}}code}}">
                 <alias:if test="document-uri()">
@@ -397,14 +399,16 @@ SOFTWARE.
                   <alias:value-of select="$Q{{http://www.w3.org/2005/xqt-errors}}description"/>
                 </alias:if>
               </svrl:error>
-              <alias:variable name="message" as="Q{{http://www.w3.org/2001/XMLSchema}}string+" expand-text="yes" xsl:use-when="$schxslt:terminate-validation-on-error">
-                Running the ISO Schematron validation failed with a dynamic error.
-                Error code: {{$Q{{http://www.w3.org/2005/xqt-errors}}code}} Reason: {{$Q{{http://www.w3.org/2005/xqt-errors}}description}}
-              </alias:variable>
-              <alias:message terminate="yes" error-code="Q{{{{http://dmaus.name/ns/2023/schxslt}}}}ValidationError" xsl:use-when="$schxslt:terminate-validation-on-error">
-                <alias:text/>
-                <alias:value-of select="normalize-space(string-join($message))"/>
-              </alias:message>
+              <if test="$schxslt:terminate-validation-on-error">
+                <alias:variable name="message" as="Q{{http://www.w3.org/2001/XMLSchema}}string+" expand-text="yes">
+                  Running the ISO Schematron validation failed with a dynamic error.
+                  Error code: {{$Q{{http://www.w3.org/2005/xqt-errors}}code}} Reason: {{$Q{{http://www.w3.org/2005/xqt-errors}}description}}
+                </alias:variable>
+                <alias:message terminate="yes" error-code="Q{{{{http://dmaus.name/ns/2023/schxslt}}}}ValidationError">
+                  <alias:text/>
+                  <alias:value-of select="normalize-space(string-join($message))"/>
+                </alias:message>
+              </if>
             </alias:catch>
           </alias:try>
         </svrl:schematron-output>
@@ -413,19 +417,19 @@ SOFTWARE.
 
     </alias:stylesheet>
 
-  </xsl:template>
+  </template>
 
-  <xsl:template match="sch:rule" as="element(xsl:template)" mode="schxslt:transpile">
-    <xsl:param name="mode" as="xs:string" required="yes"/>
+  <template match="sch:rule" as="element(Q{http://www.w3.org/1999/XSL/Transform}template)" mode="schxslt:transpile">
+    <param name="mode" as="xs:string" required="yes"/>
 
     <alias:template match="{@context}" mode="{$mode}" priority="{last() - position()}">
       <alias:param name="Q{{http://dmaus.name/ns/2023/schxslt}}pattern" as="Q{{http://www.w3.org/2001/XMLSchema}}string*" select="()"/>
       <alias:choose>
         <alias:when test="'{generate-id(..)}' = $Q{{http://dmaus.name/ns/2023/schxslt}}pattern">
           <svrl:suppressed-rule>
-            <xsl:call-template name="schxslt:copy-attributes">
-              <xsl:with-param name="attributes" as="attribute()*" select="(@id, @role, @flag, @context)"/>
-            </xsl:call-template>
+            <call-template name="schxslt:copy-attributes">
+              <with-param name="attributes" as="attribute()*" select="(@id, @role, @flag, @context)"/>
+            </call-template>
             <alias:if test="document-uri()">
               <alias:attribute name="document" select="document-uri()"/>
             </alias:if>
@@ -436,15 +440,15 @@ SOFTWARE.
         </alias:when>
         <alias:otherwise>
           <svrl:fired-rule>
-            <xsl:call-template name="schxslt:copy-attributes">
-              <xsl:with-param name="attributes" as="attribute()*" select="(@id, @role, @flag, @context)"/>
-            </xsl:call-template>
+            <call-template name="schxslt:copy-attributes">
+              <with-param name="attributes" as="attribute()*" select="(@id, @role, @flag, @context)"/>
+            </call-template>
             <alias:if test="document-uri()">
               <alias:attribute name="document" select="document-uri()"/>
             </alias:if>
           </svrl:fired-rule>
-          <xsl:apply-templates select="sch:let" mode="#current"/>
-          <xsl:apply-templates select="sch:assert | sch:report" mode="#current"/>
+          <apply-templates select="sch:let" mode="#current"/>
+          <apply-templates select="sch:assert | sch:report" mode="#current"/>
           <alias:next-match>
             <alias:with-param name="Q{{http://dmaus.name/ns/2023/schxslt}}pattern" as="Q{{http://www.w3.org/2001/XMLSchema}}string*" select="('{generate-id(..)}', $Q{{http://dmaus.name/ns/2023/schxslt}}pattern)"/>
           </alias:next-match>
@@ -452,176 +456,182 @@ SOFTWARE.
       </alias:choose>
     </alias:template>
 
-  </xsl:template>
+  </template>
 
-  <xsl:template match="sch:schema/sch:let" as="element(xsl:param)" mode="schxslt:transpile">
+  <template match="sch:schema/sch:let" as="element(Q{http://www.w3.org/1999/XSL/Transform}param)" mode="schxslt:transpile">
     <alias:param name="{@name}">
-      <xsl:call-template name="schxslt:copy-attributes">
-        <xsl:with-param name="attributes" as="attribute()*" select="(@as)"/>
-      </xsl:call-template>
-      <xsl:choose>
-        <xsl:when test="@value">
-          <xsl:attribute name="select" select="schxslt:protect-curlies(@value)"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:if test="not(@as)">
-            <xsl:attribute name="as">node()*</xsl:attribute>
-          </xsl:if>
-          <xsl:apply-templates select="node()" mode="schxslt:copy-verbatim"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <call-template name="schxslt:copy-attributes">
+        <with-param name="attributes" as="attribute()*" select="(@as)"/>
+      </call-template>
+      <choose>
+        <when test="@value">
+          <attribute name="select" select="schxslt:protect-curlies(@value)"/>
+        </when>
+        <otherwise>
+          <if test="not(@as)">
+            <attribute name="as">node()*</attribute>
+          </if>
+          <apply-templates select="node()" mode="schxslt:copy-verbatim"/>
+        </otherwise>
+      </choose>
     </alias:param>
-  </xsl:template>
+  </template>
 
-  <xsl:template match="sch:let" as="element(xsl:variable)" mode="schxslt:transpile">
+  <template match="sch:let" as="element(Q{http://www.w3.org/1999/XSL/Transform}variable)" mode="schxslt:transpile">
     <alias:variable name="{@name}">
-      <xsl:call-template name="schxslt:copy-attributes">
-        <xsl:with-param name="attributes" as="attribute()*" select="(@as)"/>
-      </xsl:call-template>
-      <xsl:choose>
-        <xsl:when test="@value">
-          <xsl:attribute name="select" select="schxslt:protect-curlies(@value)"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:if test="not(@as)">
-            <xsl:attribute name="as">node()*</xsl:attribute>
-          </xsl:if>
-          <xsl:apply-templates select="node()" mode="schxslt:copy-verbatim"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <call-template name="schxslt:copy-attributes">
+        <with-param name="attributes" as="attribute()*" select="(@as)"/>
+      </call-template>
+      <choose>
+        <when test="@value">
+          <attribute name="select" select="schxslt:protect-curlies(@value)"/>
+        </when>
+        <otherwise>
+          <if test="not(@as)">
+            <attribute name="as">node()*</attribute>
+          </if>
+          <apply-templates select="node()" mode="schxslt:copy-verbatim"/>
+        </otherwise>
+      </choose>
     </alias:variable>
-  </xsl:template>
+  </template>
 
-  <xsl:template match="sch:assert" as="element(xsl:if)" mode="schxslt:transpile">
+  <template match="sch:assert" as="element(Q{http://www.w3.org/1999/XSL/Transform}if)" mode="schxslt:transpile">
     <alias:if test="not({@test})">
       <alias:variable name="failed-assert" as="element(svrl:failed-assert)">
         <svrl:failed-assert>
-          <xsl:call-template name="schxslt:failed-assertion-content"/>
+          <call-template name="schxslt:failed-assertion-content"/>
         </svrl:failed-assert>
       </alias:variable>
-      <alias:message  select="$failed-assert" error-code="Q{{http://dmaus.name/ns/2023/schxslt}}CatchFailEarly" terminate="yes" xsl:use-when="$schxslt:fail-early"/>
+      <if test="$schxslt:fail-early">
+        <alias:message  select="$failed-assert" error-code="Q{{http://dmaus.name/ns/2023/schxslt}}CatchFailEarly" terminate="yes"/>
+      </if>
       <alias:sequence select="$failed-assert"/>
     </alias:if>
-  </xsl:template>
+  </template>
 
-  <xsl:template match="sch:report" as="element(xsl:if)" mode="schxslt:transpile">
+  <template match="sch:report" as="element(Q{http://www.w3.org/1999/XSL/Transform}if)" mode="schxslt:transpile">
     <alias:if test="{@test}">
       <alias:variable name="successful-report" as="element(svrl:successful-report)">
         <svrl:successful-report>
-          <xsl:call-template name="schxslt:failed-assertion-content"/>
+          <call-template name="schxslt:failed-assertion-content"/>
         </svrl:successful-report>
       </alias:variable>
-      <alias:message  select="$successful-report" error-code="Q{{http://dmaus.name/ns/2023/schxslt}}CatchFailEarly" terminate="yes" xsl:use-when="$schxslt:fail-early"/>
+      <if test="$schxslt:fail-early">
+        <alias:message  select="$successful-report" error-code="Q{{http://dmaus.name/ns/2023/schxslt}}CatchFailEarly" terminate="yes"/>
+      </if>
       <alias:sequence select="$successful-report"/>
     </alias:if>
-  </xsl:template>
+  </template>
 
-  <xsl:template match="*" as="element()" mode="schxslt:copy-verbatim schxslt:copy-message-content">
+  <template match="*" as="element()" mode="schxslt:copy-verbatim schxslt:copy-message-content">
     <alias:element name="{local-name()}" namespace="{namespace-uri()}">
-      <xsl:apply-templates select="@*" mode="#current"/>
-      <xsl:apply-templates select="node()" mode="#current"/>
+      <apply-templates select="@*" mode="#current"/>
+      <apply-templates select="node()" mode="#current"/>
     </alias:element>
-  </xsl:template>
+  </template>
 
-  <xsl:template match="@*" as="element()" mode="schxslt:copy-verbatim schxslt:copy-message-content">
+  <template match="@*" as="element()" mode="schxslt:copy-verbatim schxslt:copy-message-content">
     <alias:attribute name="{local-name()}" namespace="{namespace-uri()}">{.}</alias:attribute>
-  </xsl:template>
+  </template>
 
-  <xsl:template match="xsl:copy-of[ancestor::sch:property]" as="element(xsl:copy-of)" mode="schxslt:copy-message-content">
-    <xsl:copy>
-      <xsl:sequence select="@*"/>
-      <xsl:sequence select="node()"/>
-    </xsl:copy>
-  </xsl:template>
+  <template match="Q{http://www.w3.org/1999/XSL/Transform}copy-of[ancestor::sch:property]" as="element(Q{http://www.w3.org/1999/XSL/Transform}copy-of)" mode="schxslt:copy-message-content">
+    <copy>
+      <sequence select="@*"/>
+      <sequence select="node()"/>
+    </copy>
+  </template>
 
-  <xsl:template match="sch:name[@path]" as="element(xsl:value-of)" mode="schxslt:copy-message-content">
+  <template match="sch:name[@path]" as="element(Q{http://www.w3.org/1999/XSL/Transform}value-of)" mode="schxslt:copy-message-content">
     <alias:value-of select="{@path}"/>
-  </xsl:template>
+  </template>
 
-  <xsl:template match="sch:name[not(@path)]" as="element(xsl:value-of)" mode="schxslt:copy-message-content">
+  <template match="sch:name[not(@path)]" as="element(Q{http://www.w3.org/1999/XSL/Transform}value-of)" mode="schxslt:copy-message-content">
     <alias:value-of select="name()"/>
-  </xsl:template>
+  </template>
 
-  <xsl:template match="sch:value-of" as="element(xsl:value-of)" mode="schxslt:copy-message-content">
+  <template match="sch:value-of" as="element(Q{http://www.w3.org/1999/XSL/Transform}value-of)" mode="schxslt:copy-message-content">
     <alias:value-of select="{@select}"/>
-  </xsl:template>
+  </template>
 
-  <xsl:template name="schxslt:report-message" as="element(svrl:text)?">
-    <xsl:if test="text() | *">
+  <template name="schxslt:report-message" as="element(svrl:text)?">
+    <if test="text() | *">
       <svrl:text>
-        <xsl:sequence select="@xml:*"/>
-        <xsl:apply-templates select="node()" mode="schxslt:copy-message-content"/>
+        <sequence select="@xml:*"/>
+        <apply-templates select="node()" mode="schxslt:copy-message-content"/>
       </svrl:text>
-    </xsl:if>
-  </xsl:template>
+    </if>
+  </template>
 
-  <xsl:template name="schxslt:report-diagnostics" as="element(svrl:diagnostic-reference)*">
-    <xsl:variable name="diagnostics" as="xs:string*" select="tokenize(normalize-space(@diagnostics))"/>
-    <xsl:for-each select="if (../../sch:diagnostics) then key('schxslt:diagnosticById', $diagnostics, ../..) else key('schxslt:diagnosticById', $diagnostics, ancestor::sch:schema)">
+  <template name="schxslt:report-diagnostics" as="element(svrl:diagnostic-reference)*">
+    <variable name="diagnostics" as="xs:string*" select="tokenize(normalize-space(@diagnostics))"/>
+    <for-each select="if (../../sch:diagnostics) then key('schxslt:diagnosticById', $diagnostics, ../..) else key('schxslt:diagnosticById', $diagnostics, ancestor::sch:schema)">
       <svrl:diagnostic-reference diagnostic="{schxslt:protect-curlies(@id)}">
         <svrl:text>
-          <xsl:if test="schxslt:in-scope-language(.) ne schxslt:in-scope-language(ancestor::sch:schema)">
-            <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
-          </xsl:if>
-          <xsl:sequence select="@xml:space"/>
-          <xsl:call-template name="schxslt:copy-attributes">
-            <xsl:with-param name="attributes" as="attribute()*" select="(@see, @icon, @fpi)"/>
-          </xsl:call-template>
-          <xsl:apply-templates select="node()" mode="schxslt:copy-message-content"/>
+          <if test="schxslt:in-scope-language(.) ne schxslt:in-scope-language(ancestor::sch:schema)">
+            <attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
+          </if>
+          <sequence select="@xml:space"/>
+          <call-template name="schxslt:copy-attributes">
+            <with-param name="attributes" as="attribute()*" select="(@see, @icon, @fpi)"/>
+          </call-template>
+          <apply-templates select="node()" mode="schxslt:copy-message-content"/>
         </svrl:text>
       </svrl:diagnostic-reference>
-    </xsl:for-each>
-  </xsl:template>
+    </for-each>
+  </template>
 
-  <xsl:template name="schxslt:report-properties" as="element(svrl:property-reference)*">
-    <xsl:variable name="properties" as="xs:string*" select="tokenize(normalize-space(@properties))"/>
-    <xsl:for-each select="if (../../sch:properties) then key('schxslt:propertyById', $properties, ../..) else key('schxslt:propertyById', $properties, ancestor::sch:schema)">
+  <template name="schxslt:report-properties" as="element(svrl:property-reference)*">
+    <variable name="properties" as="xs:string*" select="tokenize(normalize-space(@properties))"/>
+    <for-each select="if (../../sch:properties) then key('schxslt:propertyById', $properties, ../..) else key('schxslt:propertyById', $properties, ancestor::sch:schema)">
       <svrl:property-reference property="{schxslt:protect-curlies(@id)}">
-        <xsl:call-template name="schxslt:copy-attributes">
-          <xsl:with-param name="attributes" as="attribute()*" select="(@role, @scheme)"/>
-        </xsl:call-template>
+        <call-template name="schxslt:copy-attributes">
+          <with-param name="attributes" as="attribute()*" select="(@role, @scheme)"/>
+        </call-template>
         <svrl:text>
-          <xsl:if test="schxslt:in-scope-language(.) ne schxslt:in-scope-language(ancestor::sch:schema)">
-            <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
-          </xsl:if>
-          <xsl:sequence select="@xml:space"/>
-          <xsl:call-template name="schxslt:copy-attributes">
-            <xsl:with-param name="attributes" as="attribute()*" select="(@see, @icon, @fpi)"/>
-          </xsl:call-template>
-          <xsl:apply-templates select="node()" mode="schxslt:copy-message-content"/>
+          <if test="schxslt:in-scope-language(.) ne schxslt:in-scope-language(ancestor::sch:schema)">
+            <attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
+          </if>
+          <sequence select="@xml:space"/>
+          <call-template name="schxslt:copy-attributes">
+            <with-param name="attributes" as="attribute()*" select="(@see, @icon, @fpi)"/>
+          </call-template>
+          <apply-templates select="node()" mode="schxslt:copy-message-content"/>
         </svrl:text>
       </svrl:property-reference>
-    </xsl:for-each>
-  </xsl:template>
+    </for-each>
+  </template>
 
-  <xsl:template name="schxslt:failed-assertion-content" as="node()+">
-    <xsl:call-template name="schxslt:copy-attributes">
-      <xsl:with-param name="attributes" as="attribute()*" select="(@flag, @id, @role, @test)"/>
-    </xsl:call-template>
-    <xsl:if test="schxslt:in-scope-language(.) ne schxslt:in-scope-language(ancestor::sch:schema)">
-      <xsl:attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
-    </xsl:if>
-    <alias:attribute name="location" select="{($schxslt:location-function, 'path')[1]}(.)" xsl:use-when="not($schxslt:streamable) or exists($schxslt:location-function)"/>
-    <xsl:call-template name="schxslt:report-diagnostics"/>
-    <xsl:call-template name="schxslt:report-properties"/>
-    <xsl:call-template name="schxslt:report-message"/>
-  </xsl:template>
+  <template name="schxslt:failed-assertion-content" as="node()+">
+    <call-template name="schxslt:copy-attributes">
+      <with-param name="attributes" as="attribute()*" select="(@flag, @id, @role, @test)"/>
+    </call-template>
+    <if test="schxslt:in-scope-language(.) ne schxslt:in-scope-language(ancestor::sch:schema)">
+      <attribute name="xml:lang" select="schxslt:in-scope-language(.)"/>
+    </if>
+    <if test="not($schxslt:streamable) or exists($schxslt:location-function)">
+      <alias:attribute name="location" select="{($schxslt:location-function, 'path')[1]}(.)"/>
+    </if>
+    <call-template name="schxslt:report-diagnostics"/>
+    <call-template name="schxslt:report-properties"/>
+    <call-template name="schxslt:report-message"/>
+  </template>
 
-  <xsl:template name="schxslt:copy-attributes" as="attribute()*">
-    <xsl:param name="attributes" as="attribute()*" required="yes"/>
-    <xsl:for-each select="$attributes">
-      <xsl:attribute name="{name()}" select="if (node-name() = $schxslt:avt-attributes) then . else schxslt:protect-curlies(.)"/>
-    </xsl:for-each>
-  </xsl:template>
+  <template name="schxslt:copy-attributes" as="attribute()*">
+    <param name="attributes" as="attribute()*" required="yes"/>
+    <for-each select="$attributes">
+      <attribute name="{name()}" select="if (node-name() = $schxslt:avt-attributes) then . else schxslt:protect-curlies(.)"/>
+    </for-each>
+  </template>
 
-  <xsl:function name="schxslt:in-scope-language" as="xs:string?">
-    <xsl:param name="context" as="node()"/>
-    <xsl:value-of select="lower-case($context/ancestor-or-self::*[@xml:lang][1]/@xml:lang)"/>
-  </xsl:function>
+  <function name="schxslt:in-scope-language" as="xs:string?">
+    <param name="context" as="node()"/>
+    <value-of select="lower-case($context/ancestor-or-self::*[@xml:lang][1]/@xml:lang)"/>
+  </function>
 
-  <xsl:function name="schxslt:protect-curlies" as="xs:string">
-    <xsl:param name="value" as="xs:string"/>
-    <xsl:value-of select="$value => replace('\{', '{{') => replace('\}', '}}')"/>
-  </xsl:function>
+  <function name="schxslt:protect-curlies" as="xs:string">
+    <param name="value" as="xs:string"/>
+    <value-of select="$value => replace('\{', '{{') => replace('\}', '}}')"/>
+  </function>
 
-</xsl:transform>
+</transform>
