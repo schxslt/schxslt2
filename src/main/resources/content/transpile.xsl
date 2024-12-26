@@ -421,7 +421,6 @@ SOFTWARE.
     <xsl:param name="mode" as="xs:string" required="yes"/>
 
     <alias:template match="{@context}" mode="{$mode}" priority="{last() - position()}">
-      <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
       <alias:param name="schxslt:pattern" as="xs:string*" select="()"/>
       <alias:choose>
         <alias:when test="'{generate-id(..)}' = $schxslt:pattern">
@@ -459,7 +458,6 @@ SOFTWARE.
 
   <xsl:template match="sch:schema/sch:let" as="element(xsl:param)" mode="schxslt:transpile">
     <alias:param name="{@name}">
-      <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
       <xsl:call-template name="schxslt:copy-attributes">
         <xsl:with-param name="attributes" as="attribute()*" select="(@as)"/>
       </xsl:call-template>
@@ -479,7 +477,6 @@ SOFTWARE.
 
   <xsl:template match="sch:let" as="element(xsl:variable)" mode="schxslt:transpile">
     <alias:variable name="{@name}">
-      <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
       <xsl:call-template name="schxslt:copy-attributes">
         <xsl:with-param name="attributes" as="attribute()*" select="(@as)"/>
       </xsl:call-template>
@@ -499,7 +496,6 @@ SOFTWARE.
 
   <xsl:template match="sch:assert" as="element(xsl:if)" mode="schxslt:transpile">
     <alias:if test="not({@test})">
-      <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
       <alias:variable name="failed-assert" as="element(svrl:failed-assert)">
         <svrl:failed-assert>
           <xsl:call-template name="schxslt:failed-assertion-content"/>
@@ -512,7 +508,6 @@ SOFTWARE.
 
   <xsl:template match="sch:report" as="element(xsl:if)" mode="schxslt:transpile">
     <alias:if test="{@test}">
-      <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
       <alias:variable name="successful-report" as="element(svrl:successful-report)">
         <svrl:successful-report>
           <xsl:call-template name="schxslt:failed-assertion-content"/>
@@ -536,16 +531,13 @@ SOFTWARE.
 
   <xsl:template match="xsl:copy-of[ancestor::sch:property]" as="element(xsl:copy-of)" mode="schxslt:copy-message-content">
     <xsl:copy>
-      <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
       <xsl:sequence select="@*"/>
       <xsl:sequence select="node()"/>
     </xsl:copy>
   </xsl:template>
 
   <xsl:template match="sch:name[@path]" as="element(xsl:value-of)" mode="schxslt:copy-message-content">
-    <alias:value-of select="{@path}">
-      <xsl:call-template name="schxslt:copy-in-scope-namespaces"/>
-    </alias:value-of>
+    <alias:value-of select="{@path}"/>
   </xsl:template>
 
   <xsl:template match="sch:name[not(@path)]" as="element(xsl:value-of)" mode="schxslt:copy-message-content">
@@ -615,13 +607,6 @@ SOFTWARE.
     <xsl:call-template name="schxslt:report-diagnostics"/>
     <xsl:call-template name="schxslt:report-properties"/>
     <xsl:call-template name="schxslt:report-message"/>
-  </xsl:template>
-
-  <xsl:template name="schxslt:copy-in-scope-namespaces" as="namespace-node()*">
-    <xsl:variable name="context" as="element()" select="."/>
-    <xsl:for-each select="in-scope-prefixes($context)[.]">
-      <xsl:namespace name="{.}" select="namespace-uri-for-prefix(., $context)"/>
-    </xsl:for-each>
   </xsl:template>
 
   <xsl:template name="schxslt:copy-attributes" as="attribute()*">
