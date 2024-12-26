@@ -23,7 +23,6 @@ SOFTWARE.
 -->
 <xsl:transform version="3.0" expand-text="yes"
                xmlns:alias="http://www.w3.org/1999/XSL/TransformAlias"
-               xmlns:err="http://www.w3.org/2005/xqt-errors"
                xmlns:map="http://www.w3.org/2005/xpath-functions/map"
                xmlns:schxslt="http://dmaus.name/ns/2023/schxslt"
                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -388,20 +387,20 @@ SOFTWARE.
 
             </xsl:for-each>
             <alias:catch errors="schxslt:CatchFailEarly" xsl:use-when="$schxslt:fail-early">
-              <alias:sequence select="$err:value"/>
+              <alias:sequence select="$Q{{http://www.w3.org/2005/xqt-errors}}value"/>
             </alias:catch>
             <alias:catch>
-              <svrl:error code="{{$err:code}}">
+              <svrl:error code="{{$Q{{http://www.w3.org/2005/xqt-errors}}code}}">
                 <alias:if test="document-uri()">
                   <alias:attribute name="document" select="document-uri()"/>
                 </alias:if>
-                <alias:if test="$err:description">
-                  <alias:value-of select="$err:description"/>
+                <alias:if test="$Q{{http://www.w3.org/2005/xqt-errors}}description">
+                  <alias:value-of select="$Q{{http://www.w3.org/2005/xqt-errors}}description"/>
                 </alias:if>
               </svrl:error>
               <alias:variable name="message" as="xs:string+" expand-text="yes" xsl:use-when="$schxslt:terminate-validation-on-error">
                 Running the ISO Schematron validation failed with a dynamic error.
-                Error code: {{$err:code}} Reason: {{$err:description}}
+                Error code: {{$Q{{http://www.w3.org/2005/xqt-errors}}code}} Reason: {{$Q{{http://www.w3.org/2005/xqt-errors}}description}}
               </alias:variable>
               <alias:message terminate="yes" error-code="schxslt:ValidationError" xsl:use-when="$schxslt:terminate-validation-on-error">
                 <alias:text/>
