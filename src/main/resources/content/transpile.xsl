@@ -21,7 +21,7 @@ ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
-<xsl:transform version="3.0" expand-text="yes"
+<xsl:transform version="3.0" expand-text="yes" exclude-result-prefixes="schxslt xs"
                xmlns:alias="http://www.w3.org/1999/XSL/TransformAlias"
                xmlns:schxslt="http://dmaus.name/ns/2023/schxslt"
                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -327,7 +327,7 @@ SOFTWARE.
         <xsl:namespace name="{@prefix}" select="@uri"/>
       </xsl:for-each>
 
-      <alias:variable name="schxslt:phase" as="xs:string" select="'{$phase}'"/>
+      <alias:variable name="Q{{http://dmaus.name/ns/2023/schxslt}}phase" as="Q{{http://www.w3.org/2001/XMLSchema}}string" select="'{$phase}'"/>
 
       <xsl:apply-templates select="sch:let" mode="#current"/>
       <xsl:apply-templates select="sch:phase[@id = $phase]/sch:let" mode="#current"/>
@@ -385,7 +385,7 @@ SOFTWARE.
               </xsl:choose>
 
             </xsl:for-each>
-            <alias:catch errors="schxslt:CatchFailEarly" xsl:use-when="$schxslt:fail-early">
+            <alias:catch errors="Q{{http://dmaus.name/ns/2023/schxslt}}CatchFailEarly" xsl:use-when="$schxslt:fail-early">
               <alias:sequence select="$Q{{http://www.w3.org/2005/xqt-errors}}value"/>
             </alias:catch>
             <alias:catch>
@@ -397,11 +397,11 @@ SOFTWARE.
                   <alias:value-of select="$Q{{http://www.w3.org/2005/xqt-errors}}description"/>
                 </alias:if>
               </svrl:error>
-              <alias:variable name="message" as="xs:string+" expand-text="yes" xsl:use-when="$schxslt:terminate-validation-on-error">
+              <alias:variable name="message" as="Q{{http://www.w3.org/2001/XMLSchema}}string+" expand-text="yes" xsl:use-when="$schxslt:terminate-validation-on-error">
                 Running the ISO Schematron validation failed with a dynamic error.
                 Error code: {{$Q{{http://www.w3.org/2005/xqt-errors}}code}} Reason: {{$Q{{http://www.w3.org/2005/xqt-errors}}description}}
               </alias:variable>
-              <alias:message terminate="yes" error-code="schxslt:ValidationError" xsl:use-when="$schxslt:terminate-validation-on-error">
+              <alias:message terminate="yes" error-code="Q{{{{http://dmaus.name/ns/2023/schxslt}}}}ValidationError" xsl:use-when="$schxslt:terminate-validation-on-error">
                 <alias:text/>
                 <alias:value-of select="normalize-space(string-join($message))"/>
               </alias:message>
@@ -419,9 +419,9 @@ SOFTWARE.
     <xsl:param name="mode" as="xs:string" required="yes"/>
 
     <alias:template match="{@context}" mode="{$mode}" priority="{last() - position()}">
-      <alias:param name="schxslt:pattern" as="xs:string*" select="()"/>
+      <alias:param name="Q{{http://dmaus.name/ns/2023/schxslt}}pattern" as="Q{{http://www.w3.org/2001/XMLSchema}}string*" select="()"/>
       <alias:choose>
-        <alias:when test="'{generate-id(..)}' = $schxslt:pattern">
+        <alias:when test="'{generate-id(..)}' = $Q{{http://dmaus.name/ns/2023/schxslt}}pattern">
           <svrl:suppressed-rule>
             <xsl:call-template name="schxslt:copy-attributes">
               <xsl:with-param name="attributes" as="attribute()*" select="(@id, @role, @flag, @context)"/>
@@ -431,7 +431,7 @@ SOFTWARE.
             </alias:if>
           </svrl:suppressed-rule>
           <alias:next-match>
-            <alias:with-param name="schxslt:pattern" as="xs:string*" select="$schxslt:pattern"/>
+            <alias:with-param name="Q{{http://dmaus.name/ns/2023/schxslt}}pattern" as="Q{{http://www.w3.org/2001/XMLSchema}}string*" select="$Q{{http://dmaus.name/ns/2023/schxslt}}pattern"/>
           </alias:next-match>
         </alias:when>
         <alias:otherwise>
@@ -446,7 +446,7 @@ SOFTWARE.
           <xsl:apply-templates select="sch:let" mode="#current"/>
           <xsl:apply-templates select="sch:assert | sch:report" mode="#current"/>
           <alias:next-match>
-            <alias:with-param name="schxslt:pattern" as="xs:string*" select="('{generate-id(..)}', $schxslt:pattern)"/>
+            <alias:with-param name="Q{{http://dmaus.name/ns/2023/schxslt}}pattern" as="Q{{http://www.w3.org/2001/XMLSchema}}string*" select="('{generate-id(..)}', $Q{{http://dmaus.name/ns/2023/schxslt}}pattern)"/>
           </alias:next-match>
         </alias:otherwise>
       </alias:choose>
@@ -499,7 +499,7 @@ SOFTWARE.
           <xsl:call-template name="schxslt:failed-assertion-content"/>
         </svrl:failed-assert>
       </alias:variable>
-      <alias:message  select="$failed-assert" error-code="schxslt:CatchFailEarly" terminate="yes" xsl:use-when="$schxslt:fail-early"/>
+      <alias:message  select="$failed-assert" error-code="Q{{http://dmaus.name/ns/2023/schxslt}}CatchFailEarly" terminate="yes" xsl:use-when="$schxslt:fail-early"/>
       <alias:sequence select="$failed-assert"/>
     </alias:if>
   </xsl:template>
@@ -511,7 +511,7 @@ SOFTWARE.
           <xsl:call-template name="schxslt:failed-assertion-content"/>
         </svrl:successful-report>
       </alias:variable>
-      <alias:message  select="$successful-report" error-code="schxslt:CatchFailEarly" terminate="yes" xsl:use-when="$schxslt:fail-early"/>
+      <alias:message  select="$successful-report" error-code="Q{{http://dmaus.name/ns/2023/schxslt}}CatchFailEarly" terminate="yes" xsl:use-when="$schxslt:fail-early"/>
       <alias:sequence select="$successful-report"/>
     </alias:if>
   </xsl:template>
