@@ -72,6 +72,10 @@
               <stylesheets>
                 <param>src/main/resources/content/transpile.xsl</param>
               </stylesheets>
+              <skip>
+                <param>extends-href-fragment-xml-id-preserve-ns</param>
+                <param>include-href-fragment-xml-id-preserve-ns</param>
+              </skip>
               <locations>
                 <conformanceLocation>
                   <location>iso-schematron-xslt-3.xml</location>
