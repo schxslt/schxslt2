@@ -23,7 +23,6 @@ SOFTWARE.
 -->
 <xsl:transform version="3.0" expand-text="yes"
                xmlns:alias="http://www.w3.org/1999/XSL/TransformAlias"
-               xmlns:map="http://www.w3.org/2005/xpath-functions/map"
                xmlns:schxslt="http://dmaus.name/ns/2023/schxslt"
                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
                xmlns:svrl="http://purl.oclc.org/dsdl/svrl"
@@ -335,14 +334,14 @@ SOFTWARE.
 
       <xsl:sequence select="xsl:accumulator | xsl:function | xsl:include | xsl:import | xsl:import-schema | xsl:key | xsl:use-package"/>
 
-      <xsl:for-each select="map:keys($patterns)">
+      <xsl:for-each select="Q{http://www.w3.org/2005/xpath-functions/map}keys($patterns)">
         <alias:mode name="{.}" on-no-match="shallow-skip" streamable="{$schxslt:streamable}"/>
         <alias:template match="*" mode="{.}" priority="-10">
           <alias:apply-templates select="@*" mode="#current"/>
           <alias:apply-templates select="node()" mode="#current"/>
         </alias:template>
-        <xsl:apply-templates select="map:get($patterns, .)/sch:let" mode="#current"/>
-        <xsl:apply-templates select="map:get($patterns, .)/sch:rule" mode="#current">
+        <xsl:apply-templates select="Q{http://www.w3.org/2005/xpath-functions/map}get($patterns, .)/sch:let" mode="#current"/>
+        <xsl:apply-templates select="Q{http://www.w3.org/2005/xpath-functions/map}get($patterns, .)/sch:rule" mode="#current">
           <xsl:with-param name="mode" as="xs:string" select="."/>
         </xsl:apply-templates>
       </xsl:for-each>
@@ -361,9 +360,9 @@ SOFTWARE.
           <xsl:comment>SchXslt2 Core {$schxslt:version}</xsl:comment>
 
           <alias:try>
-            <xsl:for-each select="map:keys($patterns)">
+            <xsl:for-each select="Q{http://www.w3.org/2005/xpath-functions/map}keys($patterns)">
               <xsl:variable name="groupId" as="xs:string" select="."/>
-              <xsl:for-each select="map:get($patterns, $groupId)">
+              <xsl:for-each select="Q{http://www.w3.org/2005/xpath-functions/map}get($patterns, $groupId)">
                 <svrl:active-pattern>
                   <xsl:call-template name="schxslt:copy-attributes">
                     <xsl:with-param name="attributes" as="attribute()*" select="(@id)"/>
@@ -373,8 +372,8 @@ SOFTWARE.
               </xsl:for-each>
 
               <xsl:choose>
-                <xsl:when test="map:get($patterns, $groupId)[1]/@documents">
-                  <alias:for-each select="{map:get($patterns, $groupId)[1]/@documents}">
+                <xsl:when test="Q{http://www.w3.org/2005/xpath-functions/map}get($patterns, $groupId)[1]/@documents">
+                  <alias:for-each select="{Q{http://www.w3.org/2005/xpath-functions/map}get($patterns, $groupId)[1]/@documents}">
                     <alias:source-document href="{{.}}">
                       <alias:apply-templates select="." mode="{$groupId}"/>
                     </alias:source-document>
