@@ -4,7 +4,7 @@
     <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" xmlns:err="http://example.com/ns/err">
       <sch:pattern>
         <sch:rule context="*">
-          <sch:report test="exists(attribute)"/>
+          <sch:report test="exists(@attribute)"/>
         </sch:rule>
       </sch:pattern>
     </sch:schema>
