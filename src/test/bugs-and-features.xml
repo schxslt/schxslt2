@@ -1,5 +1,6 @@
 <testsuite xmlns="https://doi.org/10.5281/zenodo.5679629#">
   <label>SchXslt2 Bugs and Features</label>
+  <testcase href="bugs/namespace-prefix-collision.xml"/>
   <testcase href="bugs/svrl-curly-bracket-in-assert-test.xml"/>
   <testcase href="bugs/svrl-curly-bracket-in-report-test.xml"/>
   <testcase href="bugs/svrl-curly-bracket-in-rule-context.xml"/>

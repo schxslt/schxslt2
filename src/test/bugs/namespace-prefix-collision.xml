@@ -1,0 +1,17 @@
+<testcase expect="invalid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <label>A schema document should be free to declare arbitrary namespace prefixes</label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" xmlns:err="http://example.com/ns/err">
+      <sch:pattern>
+        <sch:rule context="*">
+          <sch:report test="exists(attribute)"/>
+        </sch:rule>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <root xmlns="" attribute="true"/>
+    </document>
+  </documents>
+</testcase>
