@@ -6,7 +6,10 @@ language (ISO/IEC-19757:3).
 SchXslt2 Schematron to XSLT 3.0 transpiler is copyright by David Maus &lt;dmaus@dmaus.name&gt; and released under the
 terms of the MIT license.
 
-## Installating
+Feedback to SchXslt2 is welcome via [email](mailto:dmaus@dmaus.name) or SourceHut's email-based [issue
+tracker](https://todo.sr.ht/~dmaus/schxslt2).
+
+## Installing
 
 Every release provides a ZIP file with just the XSLT transpiler for you to download and extract.
 
