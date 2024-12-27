@@ -21,7 +21,7 @@ ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
-<transform version="3.0" expand-text="yes" exclude-result-prefixes="#all" xpath-default-namespace="http://www.w3.org/1999/XSL/Transform"
+<transform version="3.0" expand-text="yes" exclude-result-prefixes="schxslt sch xs" xpath-default-namespace="http://www.w3.org/1999/XSL/Transform"
                xmlns:alias="http://www.w3.org/1999/XSL/TransformAlias"
                xmlns:schxslt="http://dmaus.name/ns/2023/schxslt"
                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
