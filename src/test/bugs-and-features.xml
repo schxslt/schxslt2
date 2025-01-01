@@ -6,4 +6,5 @@
   <testcase href="bugs/svrl-curly-bracket-in-rule-context.xml"/>
   <testcase href="features/avt-in-role-attribute.xml"/>
   <testcase href="features/avt-in-flag-attribute.xml"/>
+  <testcase href="features/xsl-accumulators.xml"/>
 </testsuite>

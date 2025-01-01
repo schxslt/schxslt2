@@ -334,8 +334,12 @@ SOFTWARE.
 
       <sequence select="Q{http://www.w3.org/1999/XSL/Transform}accumulator | Q{http://www.w3.org/1999/XSL/Transform}function | Q{http://www.w3.org/1999/XSL/Transform}include | Q{http://www.w3.org/1999/XSL/Transform}import | Q{http://www.w3.org/1999/XSL/Transform}import-schema | Q{http://www.w3.org/1999/XSL/Transform}key | Q{http://www.w3.org/1999/XSL/Transform}use-package"/>
 
+      <variable name="accumulators" as="xs:string" select="string-join(Q{http://www.w3.org/1999/XSL/Transform}accumulator/@name)"/>
+
+      <alias:mode use-accumulators="{$accumulators}"/>
+
       <for-each select="Q{http://www.w3.org/2005/xpath-functions/map}keys($patterns)">
-        <alias:mode name="{.}" on-no-match="shallow-skip" streamable="{$schxslt:streamable}"/>
+        <alias:mode name="{.}" on-no-match="shallow-skip" streamable="{$schxslt:streamable}" use-accumulators="{$accumulators}"/>
         <alias:template match="*" mode="{.}" priority="-10">
           <alias:apply-templates select="@*" mode="#current"/>
           <alias:apply-templates select="node()" mode="#current"/>
