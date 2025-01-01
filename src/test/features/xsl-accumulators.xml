@@ -1,0 +1,22 @@
+<testcase expect="invalid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <label>XSLT accumulator declarations are copied and used</label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+      <xsl:accumulator name="accumulator" initial-value="1" as="xs:integer">
+        <xsl:accumulator-rule match="*" select="$value + 1"/>
+      </xsl:accumulator>
+      <sch:ns prefix="xs" uri="http://www.w3.org/2001/XMLSchema"/>
+      <sch:pattern>
+        <sch:rule context="*">
+          <sch:report test="accumulator-after('accumulator') eq 2"/>
+        </sch:rule>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <root xmlns=""/>
+    </document>
+  </documents>
+</testcase>
