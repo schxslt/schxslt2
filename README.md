@@ -11,7 +11,8 @@ tracker](https://todo.sr.ht/~dmaus/schxslt2).
 
 ## Installing
 
-Every release provides a ZIP file with just the XSLT transpiler for you to download and extract.
+You find the most recent relase [at the projects main repository](https://git.sr.ht/~dmaus/schxslt2) page. Every release
+provides a ZIP file with just the XSLT transpiler for you to download and extract.
 
 In addition, a Java package is published to [Maven Central](https://mvnrepository.com/artifact/name.dmaus.schxslt/schxslt2) 
 for use with Maven or the Java dependency management tool of your choice.
