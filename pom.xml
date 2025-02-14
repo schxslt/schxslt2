@@ -44,7 +44,7 @@
       <plugin>
         <groupId>name.dmaus.schxslt.testsuite.harness</groupId>
         <artifactId>harness-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
         <dependencies>
           <!-- https://mvnrepository.com/artifact/net.sf.saxon/Saxon-HE -->
           <dependency>
