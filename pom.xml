@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>name.dmaus.schxslt</groupId>
   <artifactId>schxslt2</artifactId>
-  <version>v1.3.2</version>
+  <version>v1.3.3</version>
 
   <name>SchXslt2</name>
   <url>https://git.sr.ht/~dmaus/schxslt2</url>
