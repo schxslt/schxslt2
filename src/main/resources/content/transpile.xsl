@@ -469,7 +469,7 @@ SOFTWARE.
       </call-template>
       <choose>
         <when test="@value">
-          <attribute name="select" select="schxslt:protect-curlies(@value)"/>
+          <attribute name="select" select="@value"/>
         </when>
         <otherwise>
           <if test="not(@as)">
@@ -488,7 +488,7 @@ SOFTWARE.
       </call-template>
       <choose>
         <when test="@value">
-          <attribute name="select" select="schxslt:protect-curlies(@value)"/>
+          <attribute name="select" select="@value"/>
         </when>
         <otherwise>
           <if test="not(@as)">
