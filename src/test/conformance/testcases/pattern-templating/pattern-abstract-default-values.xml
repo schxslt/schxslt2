@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="invalid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <label>The @value attribute of an sch:param element of an abstract pattern provides the abstract pattern parameter default value</label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:pattern abstract="true" id="abstract-pattern">
+        <sch:param name="element-name" value="element"/>
+        <sch:rule context="$element-name">
+          <sch:assert test="false()"/>
+        </sch:rule>
+      </sch:pattern>
+      <sch:pattern is-a="abstract-pattern"/>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <element xmlns=""/>
+    </document>
+  </documents>
+  <assertions xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+    <assertion assert="count(//svrl:failed-assert) = 1"/>
+  </assertions>
+</testcase>

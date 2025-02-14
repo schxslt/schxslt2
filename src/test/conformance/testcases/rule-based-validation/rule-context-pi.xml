@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="invalid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase:label xmlns:testcase="https://doi.org/10.5281/zenodo.5679629#">Context selector matches a processing instruction node</testcase:label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:pattern>
+        <sch:rule context="processing-instruction()">
+          <sch:report test="name(.) = 'pi'"/>
+        </sch:rule>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <root>
+        <?pi foobar ?>
+      </root>
+    </document>
+  </documents>
+</testcase>

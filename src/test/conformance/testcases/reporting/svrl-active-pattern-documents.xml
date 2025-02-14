@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="invalid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase:label xmlns:testcase="https://doi.org/10.5281/zenodo.5679629#">The svrl:active-pattern/@documents attribute contains the URIs of the subordinate documents</testcase:label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:pattern documents="/document/include/@href">
+        <sch:rule context="/">
+          <sch:report test="true()"/>
+        </sch:rule>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <document xmlns="">
+        <include href="sub-1.xml"/>
+        <include href="sub-2.xml"/>
+      </document>
+    </document>
+    <document filename="sub-1.xml">
+      <document xmlns=""/>
+    </document>
+    <document filename="sub-2.xml">
+      <document xmlns=""/>
+    </document>
+  </documents>
+  <assertions xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+    <assertion assert="contains(//svrl:active-pattern/@documents, ' ')"/>
+    <assertion assert="contains(//svrl:active-pattern/@documents, 'sub-1.xml')"/>
+    <assertion assert="contains(//svrl:active-pattern/@documents, 'sub-2.xml')"/>
+    <assertion assert="normalize-space(//svrl:active-pattern/@documents) != ''"/>
+  </assertions>
+</testcase>

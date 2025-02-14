@@ -1,0 +1,21 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="https://doi.org/10.5281/zenodo.5679629#"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:element name="testsuite">
+    <xs:complexType>
+      <xs:sequence minOccurs="1" maxOccurs="1">
+        <xs:element name="label" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="include" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="href" use="required" type="xs:anyURI"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="testcase" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="href" use="required" type="xs:anyURI"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

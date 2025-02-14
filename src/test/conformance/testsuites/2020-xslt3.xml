@@ -1,0 +1,8 @@
+<testsuite xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <label>ISO Schematron 2020 test cases for the XSLT 3.0 query language binding</label>
+  <include href="instance-document-selection/2020.xml"/>
+  <include href="pattern-templating/2020-xslt3.xml"/>
+  <include href="reporting/2020.xml"/>
+  <include href="rule-based-validation/2020-xslt3.xml"/>
+  <include href="schema-composition/2020.xml"/>
+</testsuite>

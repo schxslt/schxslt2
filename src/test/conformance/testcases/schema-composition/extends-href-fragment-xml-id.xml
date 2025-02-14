@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="invalid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase:label xmlns:testcase="https://doi.org/10.5281/zenodo.5679629#">sch:extends with @href includes a fragment identified by @xml:id</testcase:label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:pattern>
+        <sch:rule context="/">
+          <sch:extends href="include.sch#rule"/>
+        </sch:rule>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <element xmlns=""/>
+    </document>
+    <document filename="include.sch">
+      <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+        <sch:pattern>
+          <sch:rule abstract="true" xml:id="rule">
+            <sch:assert test="false()"/>
+          </sch:rule>
+        </sch:pattern>
+      </sch:schema>
+    </document>
+  </documents>
+</testcase>

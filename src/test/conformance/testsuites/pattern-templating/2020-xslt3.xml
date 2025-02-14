@@ -1,0 +1,6 @@
+<testsuite xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <include href="2020.xml"/>
+  <testcase href="../../testcases/pattern-templating/pattern-abstract-pattern-let-value.xml"/>
+  <testcase href="../../testcases/pattern-templating/pattern-abstract-property-copy-of.xml"/>
+  <testcase href="../../testcases/pattern-templating/pattern-abstract-rule-let-value.xml"/>
+</testsuite>

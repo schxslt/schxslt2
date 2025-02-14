@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="valid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <label>Schematron namespace declarations are reported in svrl:ns-prefix-in-attribute-value elements</label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" schemaVersion="1.0">
+      <sch:ns prefix="ex1" uri="https://example.com/ns1"/>
+      <sch:ns prefix="ex2" uri="https://example.com/ns2"/>
+      <sch:pattern>
+        <sch:rule context="*">
+          <sch:assert test="true()"/>
+        </sch:rule>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <element xmlns=""/>
+    </document>
+  </documents>
+  <assertions xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+    <assertion assert="count(/svrl:schematron-output/svrl:ns-prefix-in-attribute-values[@prefix = 'ex1'][@uri = 'https://example.com/ns1']) = 1"/>
+    <assertion assert="count(/svrl:schematron-output/svrl:ns-prefix-in-attribute-values[@prefix = 'ex2'][@uri = 'https://example.com/ns2']) = 1"/>
+  </assertions>
+</testcase>

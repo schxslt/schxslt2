@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="error" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase:label xmlns:testcase="https://doi.org/10.5281/zenodo.5679629#">It is an error to extend a non-abstract rule</testcase:label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:pattern>
+        <sch:rule context="*" id="abstract-rule">
+          <sch:report test="self::element"/>
+        </sch:rule>
+        <sch:rule context="element">
+          <sch:extends rule="abstract-rule"/>
+        </sch:rule>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <element xmlns=""/>
+    </document>
+  </documents>
+</testcase>

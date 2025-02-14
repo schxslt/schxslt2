@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="invalid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase:label xmlns:testcase="https://doi.org/10.5281/zenodo.5679629#">sch:include with @href including a fragment preserves namespace bindings</testcase:label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:pattern>
+        <sch:rule context="/">
+          <sch:include href="include.sch#assert"/>
+        </sch:rule>
+      </sch:pattern>
+      <sch:include href="include.sch#abstract-pattern"/>
+      <sch:pattern is-a="abstract-pattern"/>
+      <sch:pattern>
+        <sch:include href="include.sch#rule"/>
+      </sch:pattern>
+      <sch:include href="include.sch#pattern"/>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <element xmlns="http://example.com/ns"/>
+    </document>
+    <document filename="include.sch">
+      <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+        <sch:ns prefix="ex" uri="http://example.com/ns"/>
+        <sch:pattern abstract="true" xml:id="abstract-pattern" id="abstract-pattern">
+          <sch:rule context="/">
+            <sch:report test="ex:element"/>
+          </sch:rule>
+        </sch:pattern>
+        <sch:pattern xml:id="pattern">
+          <sch:rule abstract="true" xml:id="rule">
+            <sch:report test="ex:element" xml:id="assert"/>
+          </sch:rule>
+        </sch:pattern>
+      </sch:schema>
+    </document>
+  </documents>
+</testcase>

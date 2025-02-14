@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="invalid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase:label xmlns:testcase="https://doi.org/10.5281/zenodo.5679629#">The svrl:fired-rule/@role attribute contains the role of the rule</testcase:label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:pattern>
+        <sch:rule context="/" role="info">
+          <sch:report test="true()"/>
+        </sch:rule>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <document xmlns=""/>
+    </document>
+  </documents>
+  <assertions xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+    <assertion assert="//svrl:fired-rule/@role = 'info'"/>
+  </assertions>
+</testcase>

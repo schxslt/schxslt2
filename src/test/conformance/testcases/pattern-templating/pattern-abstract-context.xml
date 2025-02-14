@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="invalid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase:label xmlns:testcase="https://doi.org/10.5281/zenodo.5679629#">When an abstract pattern is instantiated, placeholders are replaced in the sch:rule @context attribute</testcase:label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:pattern abstract="true" id="abstract-pattern">
+        <sch:rule context="$context">
+          <sch:assert test="false()"/>
+        </sch:rule>
+      </sch:pattern>
+      <sch:pattern is-a="abstract-pattern">
+        <sch:param name="context" value="element"/>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <element xmlns=""/>
+    </document>
+  </documents>
+</testcase>

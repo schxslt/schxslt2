@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="invalid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase:label xmlns:testcase="https://doi.org/10.5281/zenodo.5679629#">When an abstract pattern is instantiated, placeholders are replaced in the sch:value-of @select attribute inside a sch:diagnostic</testcase:label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:pattern abstract="true" id="abstract-pattern">
+        <sch:rule context="/">
+          <sch:assert test="false()" diagnostics="diag-1"/>
+        </sch:rule>
+      </sch:pattern>
+      <sch:pattern is-a="abstract-pattern">
+        <sch:param name="expression" value="'foobar'"/>
+      </sch:pattern>
+      <sch:diagnostics>
+        <sch:diagnostic id="diag-1">
+          <sch:value-of select="$expression"/>
+        </sch:diagnostic>
+      </sch:diagnostics>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <element xmlns=""/>
+    </document>
+  </documents>
+  <assertions xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+    <assertion assert="normalize-space(//svrl:failed-assert/svrl:diagnostic-reference/svrl:text) = 'foobar'"/>
+  </assertions>
+</testcase>

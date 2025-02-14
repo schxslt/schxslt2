@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="invalid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase:label xmlns:testcase="https://doi.org/10.5281/zenodo.5679629#">When an abstract pattern is instantiated, placeholders are replaced in the sch:let @value attribute of a pattern-scoped variable</testcase:label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:pattern abstract="true" id="abstract-pattern">
+        <sch:let name="variable" value="$expression"/>
+        <sch:rule context="/">
+          <sch:assert test="false()">
+            <sch:value-of select="$variable"/>
+          </sch:assert>
+        </sch:rule>
+      </sch:pattern>
+      <sch:pattern is-a="abstract-pattern">
+        <sch:param name="expression" value="name(*[1])"/>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <element xmlns=""/>
+    </document>
+  </documents>
+  <assertions xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+    <assertion assert="//svrl:failed-assert/svrl:text = 'element'"/>
+  </assertions>
+</testcase>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="invalid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase:label xmlns:testcase="https://doi.org/10.5281/zenodo.5679629#">Let uses the element content as value</testcase:label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:ns prefix="xsl" uri="http://www.w3.org/1999/XSL/Transform"/>
+      <sch:let name="foobar">
+        <message xmlns="http://www.w3.org/1999/XSL/Transform" terminate="yes">This should NOT terminate the program</message>ß
+      </sch:let>
+      <sch:pattern>
+        <sch:rule context="/">
+          <sch:report test="count($foobar[self::xsl:message]) = 1"/>
+        </sch:rule>
+      </sch:pattern>
+    </sch:schema>
+    <sch:schema queryBinding="xslt" xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:ns prefix="xsl" uri="http://www.w3.org/1999/XSL/Transform"/>
+      <sch:let name="foobar">
+        <message xmlns="http://www.w3.org/1999/XSL/Transform" terminate="yes">This should NOT terminate the program</message>ß
+      </sch:let>
+      <sch:pattern>
+        <sch:rule context="/">
+          <sch:report test="contains($foobar, 'NOT terminate')"/>
+        </sch:rule>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <root xmlns=""/>
+    </document>
+  </documents>
+</testcase>

@@ -1,0 +1,4 @@
+<testsuite xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase href="../../testcases/instance-document-selection/pattern-subordinate-document-variable.xml"/>
+  <testcase href="../../testcases/instance-document-selection/pattern-subordinate-document.xml"/>
+</testsuite>

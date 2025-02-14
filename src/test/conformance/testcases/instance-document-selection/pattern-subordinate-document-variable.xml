@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="invalid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <label>The subordinate document expression contains a variable</label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:let name="foo" value="'bar'"/>
+      <sch:pattern documents="/element/@secondary[$foo = 'bar']">
+        <sch:rule context="/">
+          <sch:report test="root"/>
+        </sch:rule>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <element secondary="document-02.xml" xmlns=""/>
+    </document>
+    <document filename="document-02.xml">
+      <root xmlns=""/>
+    </document>
+  </documents>
+</testcase>

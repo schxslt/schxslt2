@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="valid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <label>A @from attribute on a phase element limits validation to nodes matching the pattern in @from</label>
+  <schemas>
+    <sch:schema defaultPhase="phase" xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:phase id="phase" from="element">
+        <sch:active pattern="pattern"/>
+      </sch:phase>
+      <sch:pattern id="pattern">
+        <sch:rule context="root">
+          <sch:assert test="false()"/>
+        </sch:rule>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <root xmlns="">
+        <element/>
+      </root>
+    </document>
+  </documents>
+</testcase>

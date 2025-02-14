@@ -1,0 +1,10 @@
+<testsuite xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <include href="2020.xml"/>
+  <testcase href="../../testcases/rule-based-validation/let-value-element-content.xml"/>
+  <testcase href="../../testcases/rule-based-validation/rule-context-global-variable.xml"/>
+  <testcase href="../../testcases/rule-based-validation/rule-context-pattern-variable.xml"/>
+  <testcase href="../../testcases/rule-based-validation/rule-context-phase-variable.xml"/>
+  <testcase href="../../testcases/rule-based-validation/xsl-key-element-content.xml"/>
+  <testcase href="../../testcases/rule-based-validation/xsl-key.xml"/>
+  <testcase href="../../testcases/rule-based-validation/xsl-function.xml"/>
+</testsuite>

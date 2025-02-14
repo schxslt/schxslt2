@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="invalid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase:label xmlns:testcase="https://doi.org/10.5281/zenodo.5679629#">When an abstract pattern is instantiated, placeholders are replaced in the sch:pattern @documents attribute</testcase:label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:pattern id="abstract-pattern" abstract="true" documents="$expression">
+        <sch:rule context="/">
+          <sch:report test="root"/>
+        </sch:rule>
+      </sch:pattern>
+      <sch:pattern is-a="abstract-pattern">
+        <sch:param name="expression" value="/element/@secondary"/>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <element secondary="document-02.xml" xmlns=""/>
+    </document>
+    <document filename="document-02.xml">
+      <root xmlns=""/>
+    </document>
+  </documents>
+</testcase>

@@ -1,0 +1,11 @@
+<testsuite xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase href="../../testcases/pattern-templating/pattern-abstract-assert-test.xml"/>
+  <testcase href="../../testcases/pattern-templating/pattern-abstract-context.xml"/>
+  <testcase href="../../testcases/pattern-templating/pattern-abstract-diagnostic-value-of.xml"/>
+  <testcase href="../../testcases/pattern-templating/pattern-abstract-name-path.xml"/>
+  <testcase href="../../testcases/pattern-templating/pattern-abstract-pattern-documents.xml"/>
+  <testcase href="../../testcases/pattern-templating/pattern-abstract-property-value-of.xml"/>
+  <testcase href="../../testcases/pattern-templating/pattern-abstract-report-test.xml"/>
+  <testcase href="../../testcases/pattern-templating/pattern-abstract-value-of.xml"/>
+  <testcase href="../../testcases/pattern-templating/pattern-abstract.xml"/>
+</testsuite>

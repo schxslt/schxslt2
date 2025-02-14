@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="invalid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase:label xmlns:testcase="https://doi.org/10.5281/zenodo.5679629#">Language tag of diagnostic is preserved in SVRL output</testcase:label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:pattern>
+        <sch:rule context="/">
+          <sch:report test="true()" diagnostics="d1"/>
+        </sch:rule>
+      </sch:pattern>
+      <sch:diagnostics>
+        <sch:diagnostic id="d1" xml:lang="de">
+          Context: <sch:value-of select="name()"/>
+        </sch:diagnostic>
+      </sch:diagnostics>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <element xmlns=""/>
+    </document>
+  </documents>
+  <assertions xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+    <assertion assert="count(//svrl:successful-report/svrl:diagnostic-reference/svrl:text[lang('de')]) = 1"/>
+  </assertions>
+</testcase>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="valid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <label>The svrl:schematron-result/@schemaVersion attribute contains the value of the Schema's @schemaVersion attribute</label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" schemaVersion="1.0">
+      <sch:pattern>
+        <sch:rule context="*">
+          <sch:assert test="true()"/>
+        </sch:rule>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <element xmlns=""/>
+    </document>
+  </documents>
+  <assertions xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+    <assertion assert="/svrl:schematron-output/@schemaVersion = '1.0'"/>
+  </assertions>
+</testcase>

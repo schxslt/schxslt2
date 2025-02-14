@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="invalid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase:label xmlns:testcase="https://doi.org/10.5281/zenodo.5679629#">The xsl:key element may be used before the pattern element</testcase:label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <xsl:key name="index" match="*" use="'1'" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"/>
+      <sch:pattern>
+        <sch:rule context="/">
+          <sch:report test="count(key('index', '1')) = 1"/>
+        </sch:rule>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <root xmlns=""/>
+    </document>
+  </documents>
+</testcase>

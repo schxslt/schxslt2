@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="valid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <label>The svrl:schematron-result/@phase attribute contains the selected validation phase</label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" defaultPhase="phase-1">
+      <sch:phase id="phase-1">
+        <sch:active pattern="pattern-1"/>
+      </sch:phase>
+      <sch:pattern id="pattern-1">
+        <sch:rule context="*">
+          <sch:assert test="true()"/>
+        </sch:rule>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <element xmlns=""/>
+    </document>
+  </documents>
+  <assertions xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+    <assertion assert="/svrl:schematron-output/@phase = 'phase-1'"/>
+  </assertions>
+</testcase>

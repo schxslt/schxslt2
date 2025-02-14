@@ -1,0 +1,11 @@
+<testsuite xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase href="../../testcases/schema-composition/extends-href-fragment-xml-id.xml"/>
+  <testcase href="../../testcases/schema-composition/extends-recursive.xml"/>
+  <testcase href="../../testcases/schema-composition/include-href-fragment-xml-id.xml"/>
+  <testcase href="../../testcases/schema-composition/include-recursive.xml"/>
+  <testcase href="../../testcases/schema-composition/rule-abstract-recursive.xml"/>
+  <testcase href="../../testcases/schema-composition/rule-abstract-scope-error.xml"/>
+  <testcase href="../../testcases/schema-composition/rule-abstract.xml"/>
+  <testcase href="../../testcases/schema-composition/rule-extends-no-abstract.xml"/>
+  <testcase href="../../testcases/schema-composition/schema-default-phase.xml"/>
+</testsuite>

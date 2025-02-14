@@ -1,0 +1,9 @@
+<testsuite xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase href="../../testcases/rule-based-validation/rule-context-attribute.xml"/>
+  <testcase href="../../testcases/rule-based-validation/rule-context-comment.xml"/>
+  <testcase href="../../testcases/rule-based-validation/rule-context-document.xml"/>
+  <testcase href="../../testcases/rule-based-validation/rule-context-element.xml"/>
+  <testcase href="../../testcases/rule-based-validation/rule-context-pi.xml"/>
+  <testcase href="../../testcases/rule-based-validation/rule-context-text.xml"/>
+  <testcase href="../../testcases/rule-based-validation/rule-order.xml"/>
+</testsuite>

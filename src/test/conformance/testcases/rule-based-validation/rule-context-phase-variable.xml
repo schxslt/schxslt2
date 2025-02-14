@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="invalid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase:label xmlns:testcase="https://doi.org/10.5281/zenodo.5679629#">Context selector uses a phase variable</testcase:label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" defaultPhase="phase">
+      <sch:phase id="phase">
+        <sch:let name="variable" value="'root'"/>
+        <sch:active pattern="pattern"/>
+      </sch:phase>
+      <sch:pattern id="pattern">
+        <sch:rule context="*[local-name() = $variable]">
+          <sch:report test="true()"/>
+        </sch:rule>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <root xmlns=""/>
+    </document>
+  </documents>
+</testcase>

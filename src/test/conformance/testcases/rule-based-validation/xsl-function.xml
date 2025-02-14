@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcase expect="invalid" xmlns="https://doi.org/10.5281/zenodo.5679629#">
+  <testcase:label xmlns:testcase="https://doi.org/10.5281/zenodo.5679629#">The xsl:function element may be used before the pattern element</testcase:label>
+  <schemas>
+    <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:ns prefix="ex" uri="http://example.com/ns"/>
+      <xsl:function name="ex:function" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+        <xsl:value-of select="'1'"/>
+      </xsl:function>
+      <sch:pattern>
+        <sch:rule context="/">
+          <sch:report test="ex:function() = '1'"/>
+        </sch:rule>
+      </sch:pattern>
+    </sch:schema>
+  </schemas>
+  <documents>
+    <document filename="document.xml">
+      <root xmlns=""/>
+    </document>
+  </documents>
+</testcase>
