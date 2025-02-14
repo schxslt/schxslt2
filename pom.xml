@@ -57,11 +57,6 @@
             <artifactId>xmlresolver</artifactId>
             <version>6.0.4</version>
           </dependency>
-          <dependency>
-            <groupId>name.dmaus.schxslt</groupId>
-            <artifactId>schematron-conformance</artifactId>
-            <version>2.0</version>
-          </dependency>
         </dependencies>
         <configuration>
           <executions>
