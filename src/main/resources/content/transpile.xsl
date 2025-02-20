@@ -99,9 +99,6 @@ SOFTWARE.
   <mode name="schxslt:copy-verbatim" on-no-match="shallow-copy"/>
   <mode name="schxslt:copy-message-content" on-no-match="shallow-copy"/>
 
-  <key name="schxslt:patternByPhaseId" match="sch:pattern" use="../sch:phase[sch:active/@pattern = current()/@id]/@id"/>
-  <key name="schxslt:patternByPhaseId" match="sch:pattern" use="'#ALL'"/>
-
   <template match="sch:schema" as="element(Q{http://www.w3.org/1999/XSL/Transform}stylesheet)">
 
     <variable name="schema" as="document-node(element(sch:schema))">
@@ -309,7 +306,7 @@ SOFTWARE.
     <variable name="phase" as="xs:string" select="if ($schxslt:phase = ('#DEFAULT', '')) then (@defaultPhase, '#ALL')[1] else $schxslt:phase"/>
     <variable name="patterns" as="map(xs:string, element(sch:pattern)+)">
       <map>
-        <for-each-group select="key('schxslt:patternByPhaseId', $phase)" group-by="string(@documents)">
+        <for-each-group select="if ($phase = '#ALL') then sch:pattern else sch:pattern[@id = current()/sch:phase[@id = $phase]/sch:active/@pattern]" group-by="string(@documents)">
           <map-entry key="concat('group.', generate-id(current-group()[1]))" select="current-group()"/>
         </for-each-group>
       </map>
