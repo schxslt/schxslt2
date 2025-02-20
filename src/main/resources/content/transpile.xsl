@@ -101,8 +101,6 @@ SOFTWARE.
 
   <key name="schxslt:patternByPhaseId" match="sch:pattern" use="../sch:phase[sch:active/@pattern = current()/@id]/@id"/>
   <key name="schxslt:patternByPhaseId" match="sch:pattern" use="'#ALL'"/>
-  <key name="schxslt:diagnosticById" match="sch:diagnostic" use="@id"/>
-  <key name="schxslt:propertyById" match="sch:property" use="@id"/>
 
   <template match="sch:schema" as="element(Q{http://www.w3.org/1999/XSL/Transform}stylesheet)">
 
@@ -234,19 +232,15 @@ SOFTWARE.
       </message>
     </if>
 
-    <variable name="instance" as="document-node()">
-      <!-- In order to make use of fn:key() in the transpilation stage
-           we need to root the preprocessed schema. -->
-      <document>
-        <apply-templates select="$is-a/node()" mode="#current">
-          <with-param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
-          <with-param name="params" as="element(sch:param)*" select="($params-supplied, $params-declared[not(@name = $params-supplied/@name)][@value])" tunnel="yes"/>
-        </apply-templates>
-      </document>
+    <variable name="instance" as="node()*">
+      <apply-templates select="$is-a/node()" mode="#current">
+        <with-param name="sourceLanguage" as="xs:string" select="schxslt:in-scope-language(.)"/>
+        <with-param name="params" as="element(sch:param)*" select="($params-supplied, $params-declared[not(@name = $params-supplied/@name)][@value])" tunnel="yes"/>
+      </apply-templates>
     </variable>
 
-    <variable name="diagnostics" as="xs:string*" select="tokenize(string-join($instance/sch:rule/sch:*/@diagnostics, ' '))"/>
-    <variable name="properties" as="xs:string*" select="tokenize(string-join($instance/sch:rule/sch:*/@properties, ' '))"/>
+    <variable name="diagnostics" as="xs:string*" select="tokenize(string-join($instance[self::sch:rule]/sch:*/@diagnostics, ' '))"/>
+    <variable name="properties" as="xs:string*" select="tokenize(string-join($instance[self::sch:rule]/sch:*/@properties, ' '))"/>
 
     <copy>
       <apply-templates select="@*" mode="#current">
@@ -265,14 +259,14 @@ SOFTWARE.
 
       <if test="exists($diagnostics)">
         <element name="diagnostics" namespace="http://purl.oclc.org/dsdl/schematron">
-          <apply-templates select="key('schxslt:diagnosticById', $diagnostics)" mode="#current">
+          <apply-templates select="../sch:diagnostics/sch:diagnostic[@id = $diagnostics]" mode="#current">
             <with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
           </apply-templates>
         </element>
       </if>
       <if test="exists($properties)">
         <element name="properties" namespace="http://purl.oclc.org/dsdl/schematron">
-          <apply-templates select="key('schxslt:propertyById', $properties)" mode="#current">
+          <apply-templates select="../sch:properties/sch:property[@id = $properties]" mode="#current">
             <with-param name="params" as="element(sch:param)*" select="sch:param" tunnel="yes"/>
           </apply-templates>
         </element>
@@ -566,7 +560,7 @@ SOFTWARE.
 
   <template name="schxslt:report-diagnostics" as="element(svrl:diagnostic-reference)*">
     <variable name="diagnostics" as="xs:string*" select="tokenize(normalize-space(@diagnostics))"/>
-    <for-each select="if (../../sch:diagnostics) then key('schxslt:diagnosticById', $diagnostics, ../..) else key('schxslt:diagnosticById', $diagnostics, ancestor::sch:schema)">
+    <for-each select="(../../sch:diagnostics, ../../../sch:diagnostics)[1]/sch:diagnostic[@id = $diagnostics]">
       <svrl:diagnostic-reference diagnostic="{schxslt:protect-curlies(@id)}">
         <svrl:text>
           <if test="schxslt:in-scope-language(.) ne schxslt:in-scope-language(ancestor::sch:schema)">
@@ -584,7 +578,7 @@ SOFTWARE.
 
   <template name="schxslt:report-properties" as="element(svrl:property-reference)*">
     <variable name="properties" as="xs:string*" select="tokenize(normalize-space(@properties))"/>
-    <for-each select="if (../../sch:properties) then key('schxslt:propertyById', $properties, ../..) else key('schxslt:propertyById', $properties, ancestor::sch:schema)">
+    <for-each select="(../../sch:properties, ../../../sch:properties)[1]/sch:property[@id = $properties]">
       <svrl:property-reference property="{schxslt:protect-curlies(@id)}">
         <call-template name="schxslt:copy-attributes">
           <with-param name="attributes" as="attribute()*" select="(@role, @scheme)"/>
