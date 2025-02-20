@@ -72,9 +72,9 @@
                 <param>include-href-fragment-xml-id-preserve-ns</param>
               </skip>
               <locations>
-                <conformanceLocation>
-                  <location>iso-schematron-xslt-3.xml</location>
-                </conformanceLocation>
+                <filesystemLocation>
+                  <location>../schematron-conformance/src/main/resources/testsuites/2020-xslt3.xml</location>
+                </filesystemLocation>
               </locations>
             </execution>
 
