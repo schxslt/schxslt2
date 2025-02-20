@@ -93,6 +93,7 @@ SOFTWARE.
 
   <mode name="schxslt:expand" on-no-match="shallow-copy"/>
   <mode name="schxslt:include" on-no-match="shallow-copy"/>
+  <mode name="schxslt:preprocess" on-no-match="shallow-copy"/>
   <mode name="schxslt:transpile" on-no-match="shallow-skip"/>
 
   <mode on-no-match="shallow-skip"/>
@@ -102,17 +103,21 @@ SOFTWARE.
   <template match="sch:schema" as="element(Q{http://www.w3.org/1999/XSL/Transform}stylesheet)">
 
     <variable name="schema" as="element(sch:schema)">
-      <call-template name="schxslt:perform-expand">
-        <with-param name="schema" as="element(sch:schema)">
-          <call-template name="schxslt:perform-include">
-            <with-param name="schema" as="element(sch:schema)" select="."/>
-          </call-template>
-        </with-param>
-      </call-template>
+      <apply-templates mode="schxslt:preprocess" select="."/>
     </variable>
 
     <apply-templates select="$schema" mode="schxslt:transpile"/>
 
+  </template>
+
+  <template match="sch:schema" as="element(sch:schema)" mode="schxslt:preprocess">
+    <call-template name="schxslt:perform-expand">
+      <with-param name="schema" as="element(sch:schema)">
+        <call-template name="schxslt:perform-include">
+          <with-param name="schema" as="element(sch:schema)" select="."/>
+        </call-template>
+      </with-param>
+    </call-template>
   </template>
 
   <template name="schxslt:perform-include" as="element(sch:schema)">
