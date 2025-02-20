@@ -427,7 +427,7 @@ SOFTWARE.
     <param name="mode" as="xs:string" required="yes"/>
 
     <alias:template match="{@context}" mode="{$mode}" priority="{last() - position()}">
-      <alias:param name="Q{{http://dmaus.name/ns/2023/schxslt}}pattern" as="Q{{http://www.w3.org/2001/XMLSchema}}string*" select="()"/>
+      <alias:param name="Q{{http://dmaus.name/ns/2023/schxslt}}pattern" as="Q{{http://www.w3.org/2001/XMLSchema}}string*" tunnel="yes" select="()"/>
       <alias:choose>
         <alias:when test="'{generate-id(..)}' = $Q{{http://dmaus.name/ns/2023/schxslt}}pattern">
           <svrl:suppressed-rule>
@@ -438,9 +438,7 @@ SOFTWARE.
               <alias:attribute name="document" select="document-uri()"/>
             </alias:if>
           </svrl:suppressed-rule>
-          <alias:next-match>
-            <alias:with-param name="Q{{http://dmaus.name/ns/2023/schxslt}}pattern" as="Q{{http://www.w3.org/2001/XMLSchema}}string*" select="$Q{{http://dmaus.name/ns/2023/schxslt}}pattern"/>
-          </alias:next-match>
+          <alias:next-match/>
         </alias:when>
         <alias:otherwise>
           <svrl:fired-rule>
@@ -454,7 +452,7 @@ SOFTWARE.
           <apply-templates select="sch:let" mode="#current"/>
           <apply-templates select="sch:assert | sch:report" mode="#current"/>
           <alias:next-match>
-            <alias:with-param name="Q{{http://dmaus.name/ns/2023/schxslt}}pattern" as="Q{{http://www.w3.org/2001/XMLSchema}}string*" select="('{generate-id(..)}', $Q{{http://dmaus.name/ns/2023/schxslt}}pattern)"/>
+            <alias:with-param name="Q{{http://dmaus.name/ns/2023/schxslt}}pattern" as="Q{{http://www.w3.org/2001/XMLSchema}}string*" tunnel="yes" select="('{generate-id(..)}', $Q{{http://dmaus.name/ns/2023/schxslt}}pattern)"/>
           </alias:next-match>
         </alias:otherwise>
       </alias:choose>
