@@ -101,7 +101,6 @@ SOFTWARE.
 
   <key name="schxslt:patternByPhaseId" match="sch:pattern" use="../sch:phase[sch:active/@pattern = current()/@id]/@id"/>
   <key name="schxslt:patternByPhaseId" match="sch:pattern" use="'#ALL'"/>
-  <key name="schxslt:phaseByPatternId" match="sch:phase" use="sch:active/@pattern"/>
   <key name="schxslt:diagnosticById" match="sch:diagnostic" use="@id"/>
   <key name="schxslt:propertyById" match="sch:property" use="@id"/>
 
