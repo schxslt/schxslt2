@@ -101,18 +101,14 @@ SOFTWARE.
 
   <template match="sch:schema" as="element(Q{http://www.w3.org/1999/XSL/Transform}stylesheet)">
 
-    <variable name="schema" as="document-node(element(sch:schema))">
-      <document>
-        <call-template name="schxslt:perform-expand">
-          <with-param name="schema" as="document-node(element(sch:schema))">
-            <document>
-              <call-template name="schxslt:perform-include">
-                <with-param name="schema" as="element(sch:schema)" select="."/>
-              </call-template>
-            </document>
-          </with-param>
-        </call-template>
-      </document>
+    <variable name="schema" as="element(sch:schema)">
+      <call-template name="schxslt:perform-expand">
+        <with-param name="schema" as="element(sch:schema)">
+          <call-template name="schxslt:perform-include">
+            <with-param name="schema" as="element(sch:schema)" select="."/>
+          </call-template>
+        </with-param>
+      </call-template>
     </variable>
 
     <apply-templates select="$schema" mode="schxslt:transpile"/>
@@ -124,8 +120,8 @@ SOFTWARE.
     <apply-templates select="$schema" mode="schxslt:include"/>
   </template>
 
-  <template name="schxslt:perform-expand" as="document-node(element(sch:schema))">
-    <param name="schema" as="document-node(element(sch:schema))" required="yes"/>
+  <template name="schxslt:perform-expand" as="element(sch:schema)">
+    <param name="schema" as="element(sch:schema)" required="yes"/>
     <apply-templates select="$schema" mode="schxslt:expand"/>
   </template>
 
